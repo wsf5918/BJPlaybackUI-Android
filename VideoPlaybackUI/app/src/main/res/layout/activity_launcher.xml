@@ -1,18 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.baijia.videoplaybackui.LauncherActivity">
+    android:orientation="vertical">
 
-    <TextView
+    <RadioGroup
+        android:id="@+id/rg_demo_env"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal">
 
-</android.support.constraint.ConstraintLayout>
+        <RadioButton
+            android:id="@+id/demo_rb_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="test环境" />
+
+        <RadioButton
+            android:id="@+id/demo_rb_beta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="beta环境" />
+
+        <RadioButton
+            android:id="@+id/demo_rb_online"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="正式环境" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tv_demo_cur_env"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="当前环境： online" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_demo_room_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="房间id"
+            android:maxLines="6"
+            android:minLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_demo_room_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="房间token"
+            android:maxLines="6"
+            android:minLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_demo_enter_pb_room_online"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="进入在线房间" />
+
+
+</LinearLayout>

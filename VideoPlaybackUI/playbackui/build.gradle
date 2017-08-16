@@ -30,18 +30,18 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
 
     //测试
-    compile project(path: ':video-playback')  //回放core
-    compile project(path: ':videoplayer-sdk')  //点播
+    compile project(path: ':video-playback') //回放core
     compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
 
     //打包
 //    compile 'com.baijia.player:video-playback:0.4.0'
-//    compile 'com.baijia.player:videoplayer:1.4.7'
 //    compile 'com.baijia.live:liveplayer-sdk-core-ppt:0.3.9'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
 }
+
 
 apply from: 'https://raw.github.com/baijia/gradle-mvn-push/master/gradle-mvn-push.gradle'
