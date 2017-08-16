@@ -30,7 +30,7 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
     //view
     private MaterialDialog launchStepDlg;
     private BJPlayerView mPlayerView;
-    private RelativeLayout rlContainerBig;
+    private RelativeLayout rlContainerBig, rlContainerProgress;
     private ImageView ivQuitRoom;
     private PBRoomProgressPresenter progressPresenter;
     private PBDragFrameLayout dragContainerBig;
@@ -58,6 +58,7 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
         ivQuitRoom = (ImageView) findViewById(R.id.iv_pb_exit);
         dragContainerBig = (PBDragFrameLayout) findViewById(R.id.dfl_pb_container_freedom_big);
         mPlayerView = (BJPlayerView) findViewById(R.id.pb_pv_main);
+        rlContainerProgress = (RelativeLayout) findViewById(R.id.rl_pb_container_progress);
     }
 
     private void initListeners() {
@@ -120,7 +121,7 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
     private void initLaunchStepDlg() {
         launchStepDlg = new MaterialDialog.Builder(this)
                 .title("正在加载...")
-                .progress(false, 100, false)
+                .progress(true, 100, false)
                 .cancelable(true)
                 .build();
     }
@@ -132,6 +133,10 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
         mPlayerView.setTopPresenter(progressPresenter);
         mPlayerView.setBottomPresenter(progressPresenter);
         mPlayerView.setCenterPresenter(progressPresenter);
+        mPlayerView.enableBrightnessGesture(false);
+        mPlayerView.enableSeekGesture(false);
+        mPlayerView.enableVolumeGesture(false);
+        rlContainerProgress.addView(view);
         //enter room action
         switch (deployType) {
             case 0:
@@ -146,9 +151,10 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
             default:
                 break;
         }
-        mRoom.enterRoom(this);
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
+        mRoom.enterRoom(this);
+        launchStepDlg.show();
     }
 
     //进入房间的三个回调

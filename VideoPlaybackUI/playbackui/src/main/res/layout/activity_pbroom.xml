@@ -22,8 +22,7 @@
             android:id="@+id/rl_pb_container_progress"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:background="#41d678">
+            android:layout_gravity="bottom">
 
         </RelativeLayout>
 
