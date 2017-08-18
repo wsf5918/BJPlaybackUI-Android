@@ -1,6 +1,8 @@
 package com.baijia.videoplaybackui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ public class LauncherActivity extends AppCompatActivity {
         etRoomToken = (EditText) findViewById(R.id.et_demo_room_token);
         rgEnv = (RadioGroup) findViewById(R.id.rg_demo_env);
         tvCurEnv = (TextView) findViewById(R.id.tv_demo_cur_env);
+        getPrevParams();
     }
 
     private void initListener() {
@@ -50,6 +53,7 @@ public class LauncherActivity extends AppCompatActivity {
                         Toast.makeText(LauncherActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
+                updateParams();
             }
         });
         rgEnv.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -73,5 +77,21 @@ public class LauncherActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void getPrevParams() {
+        SharedPreferences sp = getSharedPreferences("bj_playback_ui_common", Context.MODE_PRIVATE);
+        String roomId = sp.getString("bj_playback_room_id", "");
+        String roomToken = sp.getString("bj_playback_room_token", "");
+        etRoomId.setText(roomId);
+        etRoomToken.setText(roomToken);
+    }
+
+    private void updateParams() {
+        SharedPreferences sp = getSharedPreferences("bj_playback_ui_common", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("bj_playback_room_id", etRoomId.getText().toString().trim());
+        editor.putString("bj_playback_room_token", etRoomToken.getText().toString().trim());
+        editor.apply();
     }
 }

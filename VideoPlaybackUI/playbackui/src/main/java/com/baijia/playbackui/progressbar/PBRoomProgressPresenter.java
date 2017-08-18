@@ -48,6 +48,18 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
     }
 
     private void initListener() {
+        ivStartPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mPlayerView != null) {
+                    if (mPlayerView.isPlaying()) {
+                        mPlayerView.pauseVideo();
+                    } else {
+                        mPlayerView.playVideo();
+                    }
+                }
+            }
+        });
         ivSwitchScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

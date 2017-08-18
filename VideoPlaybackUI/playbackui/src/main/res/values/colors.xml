@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="pb_live_blue">#37A4F5</color>
+    <color name="pb_live_white">#FFFFFF</color>
+    <color name="pb_secondary_text">#757575</color>
+    <color name="pb_live_half_transparent_white">#88FFFFFF</color>
+    <color name="pb_live_red">#FF5850</color>
+    <color name="pb_primary_text">#212121</color>
+
 </resources>

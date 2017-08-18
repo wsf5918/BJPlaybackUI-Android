@@ -9,7 +9,7 @@ import android.util.DisplayMetrics;
  * Created by Shubo on 2017/4/18.
  */
 
-public class DisplayUtils {
+public class PBDisplayUtils {
     private static float mScreenDensity = 0.0f;
 
     /**

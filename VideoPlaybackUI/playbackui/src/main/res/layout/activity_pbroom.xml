@@ -26,16 +26,6 @@
 
         </RelativeLayout>
 
-        <com.baijia.playbackui.viewsupport.PBDragFrameLayout
-            android:id="@+id/dfl_pb_container_freedom_small"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="right|center_vertical"
-            android:layout_marginRight="10dp"
-            android:background="#0d29dc">
-
-        </com.baijia.playbackui.viewsupport.PBDragFrameLayout>
-
         <ImageView
             android:id="@+id/iv_pb_exit"
             android:layout_width="wrap_content"
@@ -57,10 +47,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <FrameLayout
+                android:id="@+id/fl_pb_chat_content_container"
+                android:layout_width="300dp"
+                android:layout_gravity="start"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
+
         </com.baijia.playbackui.viewsupport.AutoExitDrawerLayout>
 
         <!--下边的小的窗口-->
-        <com.baijia.playbackui.viewsupport.PBDragFrameLayout
+        <FrameLayout
             android:id="@+id/dfl_pb_container_freedom_big"
             android:layout_width="150dp"
             android:layout_height="90dp"
@@ -79,8 +77,19 @@
 
             </com.baijiahulian.player.BJPlayerView>
 
-        </com.baijia.playbackui.viewsupport.PBDragFrameLayout>
+        </FrameLayout>
 
     </FrameLayout>
+
+    <com.baijia.playbackui.viewsupport.PBDragFrameLayout
+        android:id="@+id/dfl_pb_container_freedom_small"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginRight="10dp"
+        android:background="#0d29dc">
+
+    </com.baijia.playbackui.viewsupport.PBDragFrameLayout>
+
 
 </RelativeLayout>

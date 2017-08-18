@@ -1,19 +1,22 @@
 package com.baijia.playbackui.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.baijia.playbackui.R;
+import com.baijia.playbackui.base.PBBasePresenter;
+import com.baijia.playbackui.base.PBBaseView;
+import com.baijia.playbackui.chat.PBChatFragment;
+import com.baijia.playbackui.chat.PBChatPresenter;
 import com.baijia.playbackui.progressbar.PBRoomProgressPresenter;
 import com.baijia.playbackui.utils.ConstantUtil;
-import com.baijia.playbackui.utils.DisplayUtils;
-import com.baijia.playbackui.viewsupport.PBDragFrameLayout;
+import com.baijia.playbackui.viewsupport.AutoExitDrawerLayout;
 import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
@@ -26,14 +29,19 @@ import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
 
-public class PBRoomActivity extends AppCompatActivity implements LPLaunchListener {
+public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
     private MaterialDialog launchStepDlg;
     private BJPlayerView mPlayerView;
     private RelativeLayout rlContainerBig, rlContainerProgress;
     private ImageView ivQuitRoom;
     private PBRoomProgressPresenter progressPresenter;
-    private PBDragFrameLayout dragContainerBig;
+    private FrameLayout dragContainerBig;
+    private AutoExitDrawerLayout dlChat;
+    private FrameLayout flContainerChat;
+
+    //fragment
+    private PBChatFragment chatFragment;
 
     //data
     private PBRoom mRoom;
@@ -56,9 +64,11 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
     private void initView() {
         rlContainerBig = (RelativeLayout) findViewById(R.id.rl_pb_container_big);
         ivQuitRoom = (ImageView) findViewById(R.id.iv_pb_exit);
-        dragContainerBig = (PBDragFrameLayout) findViewById(R.id.dfl_pb_container_freedom_big);
+        dragContainerBig = (FrameLayout) findViewById(R.id.dfl_pb_container_freedom_big);
         mPlayerView = (BJPlayerView) findViewById(R.id.pb_pv_main);
         rlContainerProgress = (RelativeLayout) findViewById(R.id.rl_pb_container_progress);
+        dlChat = (AutoExitDrawerLayout) findViewById(R.id.dl_pb_chat);
+        dlChat.openDrawer(Gravity.START);
     }
 
     private void initListeners() {
@@ -176,6 +186,30 @@ public class PBRoomActivity extends AppCompatActivity implements LPLaunchListene
     public void onLaunchSuccess(LiveRoom liveRoom) {
         if (launchStepDlg != null) {
             launchStepDlg.dismiss();
+        }
+        launchSuccess();
+    }
+
+    /**
+     * 进入房间成功
+     */
+    private void launchSuccess() {
+        chatFragment = new PBChatFragment();
+        chatFragment.setRoom(mRoom);
+        bindVP(chatFragment, new PBChatPresenter(chatFragment));
+        addFragment(R.id.fl_pb_chat_content_container, chatFragment);
+    }
+
+    private <V extends PBBaseView, P extends PBBasePresenter> void bindVP(V view, P presenter) {
+        presenter.setRouter(this);
+        view.setPresenter(presenter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mRoom != null) {
+            mRoom.quitRoom();
         }
     }
 }

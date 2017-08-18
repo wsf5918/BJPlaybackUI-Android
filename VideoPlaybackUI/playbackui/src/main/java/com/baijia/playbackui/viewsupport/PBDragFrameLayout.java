@@ -18,6 +18,7 @@ public class PBDragFrameLayout extends FrameLayout {
 
     private int screenWidth = 10;
     private int screenHeight = 10;
+    private int left, right, top, bottom;
 
     public PBDragFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,10 +44,18 @@ public class PBDragFrameLayout extends FrameLayout {
                 int dx = (int) event.getRawX() - lastX;
                 int dy = (int) event.getRawY() - lastY;
 
-                int left = getLeft() + dx;
-                int top = getTop() + dy;
-                int right = getRight() + dx;
-                int bottom = getBottom() + dy;
+                left = getLeft() + dx;
+                top = getTop() + dy;
+                right = getRight() + dx;
+                bottom = getBottom() + dy;
+//                setLeft(left);
+//                setRight(right);
+//                setTop(top);
+//                setBottom(bottom);
+//                setX(event.getRawX());
+//                setY(event.getRawY());
+//                setTranslationX(event.getRawX());
+//                setTranslationY(event.getRawY());
                 if (left < 0) {
                     left = 0;
                     right = left + getWidth();
@@ -74,4 +83,9 @@ public class PBDragFrameLayout extends FrameLayout {
         }
         return true;
     }
+
+//    @Override
+//    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+//        super.onLayout(changed, this.left, this.top, this.right, this.bottom);
+//    }
 }
