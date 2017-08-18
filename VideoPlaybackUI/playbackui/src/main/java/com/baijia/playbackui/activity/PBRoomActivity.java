@@ -1,5 +1,6 @@
 package com.baijia.playbackui.activity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.baijia.playbackui.R;
@@ -25,9 +27,11 @@ import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.context.LPError;
 import com.baijiahulian.livecore.context.LiveRoom;
 import com.baijiahulian.livecore.launch.LPLaunchListener;
+import com.baijiahulian.livecore.ppt.LPPPTFragment;
 import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
+import com.baijiahulian.player.playerview.BJCenterViewPresenter;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
@@ -42,6 +46,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     //fragment
     private PBChatFragment chatFragment;
+    private LPPPTFragment pptFragment;
 
     //data
     private PBRoom mRoom;
@@ -142,7 +147,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
         mPlayerView.setTopPresenter(progressPresenter);
         mPlayerView.setBottomPresenter(progressPresenter);
-        mPlayerView.setCenterPresenter(progressPresenter);
+        mPlayerView.setCenterPresenter(new BJCenterViewPresenter(mPlayerView.getCenterView()));
         mPlayerView.enableBrightnessGesture(false);
         mPlayerView.enableSeekGesture(false);
         mPlayerView.enableVolumeGesture(false);
@@ -179,7 +184,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void onLaunchError(LPError lpError) {
-
+        if (launchStepDlg != null) {
+            launchStepDlg.dismiss();
+        }
+        Toast.makeText(PBRoomActivity.this, lpError.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -198,11 +206,47 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         chatFragment.setRoom(mRoom);
         bindVP(chatFragment, new PBChatPresenter(chatFragment));
         addFragment(R.id.fl_pb_chat_content_container, chatFragment);
+
+        pptFragment = new LPPPTFragment();
+        pptFragment.setLiveRoom(mRoom);
+        pptFragment.setFlingEnable(false);
+        addFragment(R.id.rl_pb_container_big, pptFragment);
     }
 
     private <V extends PBBaseView, P extends PBBasePresenter> void bindVP(V view, P presenter) {
         presenter.setRouter(this);
         view.setPresenter(presenter);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mPlayerView != null) {
+            mPlayerView.onConfigurationChanged(newConfig);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mPlayerView.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mPlayerView != null) {
+            mPlayerView.onPause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mPlayerView != null) {
+            mPlayerView.onResume();
+        }
     }
 
     @Override

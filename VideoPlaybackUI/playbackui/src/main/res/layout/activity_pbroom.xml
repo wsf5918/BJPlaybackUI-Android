@@ -71,7 +71,6 @@
                 android:layout_height="match_parent"
                 app:aspect_ratio="fit_parent"
                 app:bottom_controller="@layout/pb_player_view_null"
-                app:center_controller="@layout/pb_player_view_null"
                 app:top_controller="@layout/pb_player_view_null">
 
 

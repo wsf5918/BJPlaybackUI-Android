@@ -18,7 +18,7 @@ import com.baijiahulian.player.playerview.IPlayerTopContact;
  * 播放器控制条,整合所有控制视图
  */
 
-public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlayerBottomContact.BottomView, IPlayerCenterContact.CenterView {
+public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlayerBottomContact.BottomView{
     //view
     private View view;
     private BJPlayerView mPlayerView;
@@ -108,89 +108,15 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
     }
 
     @Override
-    public void onBufferingUpdate(int percent) {
-
-    }
-
-    @Override
-    public void showProgressSlide(int delta) {
-
-    }
-
-    @Override
-    public void showLoading(String message) {
-
-    }
-
-    @Override
-    public void dismissLoading() {
-
-    }
-
-    @Override
-    public void showVolumeSlide(int volume, int maxVolume) {
-
-    }
-
-    @Override
-    public void showBrightnessSlide(int brightness) {
-
-    }
-
-    @Override
-    public void showError(int what, int extra) {
-
-    }
-
-    @Override
-    public void showError(int code, String message) {
-
-    }
-
-    @Override
-    public void showWarning(String warn) {
-
-    }
-
-    @Override
-    public void onShow() {
-
-    }
-
-    @Override
-    public void onHide() {
-
-    }
-
-    @Override
-    public void onVideoInfoLoaded(VideoItem videoItem) {
-
-    }
-
-    @Override
-    public boolean isDialogShowing() {
-        return false;
-    }
-
-    @Override
-    public void updateDefinition() {
-
-    }
-
-    @Override
     public void setOnBackClickListener(View.OnClickListener listener) {
 
     }
 
     @Override
-    public void onBind(IPlayerCenterContact.IPlayer player) {
+    public void onBufferingUpdate(int percent) {
 
     }
 
-    @Override
-    public boolean onBackTouch() {
-        return false;
-    }
 
     @Override
     public void onBind(IPlayerBottomContact.IPlayer player) {
