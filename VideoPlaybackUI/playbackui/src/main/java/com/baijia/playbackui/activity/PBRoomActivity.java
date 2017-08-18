@@ -1,10 +1,15 @@
 package com.baijia.playbackui.activity;
 
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -18,7 +23,9 @@ import com.baijia.playbackui.chat.PBChatFragment;
 import com.baijia.playbackui.chat.PBChatPresenter;
 import com.baijia.playbackui.progressbar.PBRoomProgressPresenter;
 import com.baijia.playbackui.utils.ConstantUtil;
+import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijia.playbackui.viewsupport.AutoExitDrawerLayout;
+import com.baijia.playbackui.viewsupport.PBDragFrameLayout;
 import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
@@ -37,12 +44,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     //view
     private MaterialDialog launchStepDlg;
     private BJPlayerView mPlayerView;
-    private RelativeLayout rlContainerBig, rlContainerProgress;
-    private ImageView ivQuitRoom;
+    private FrameLayout flContainerProgress, flContainerBig, flContainerSmall;
+    private ImageView ivQuitRoom, ivChatSwitch;
     private PBRoomProgressPresenter progressPresenter;
-    private FrameLayout dragContainerBig;
     private AutoExitDrawerLayout dlChat;
-    private FrameLayout flContainerChat;
+    private PBDragFrameLayout flAreaSwitch;
 
     //fragment
     private PBChatFragment chatFragment;
@@ -67,13 +73,17 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     }
 
     private void initView() {
-        rlContainerBig = (RelativeLayout) findViewById(R.id.rl_pb_container_big);
         ivQuitRoom = (ImageView) findViewById(R.id.iv_pb_exit);
-        dragContainerBig = (FrameLayout) findViewById(R.id.dfl_pb_container_freedom_big);
         mPlayerView = (BJPlayerView) findViewById(R.id.pb_pv_main);
-        rlContainerProgress = (RelativeLayout) findViewById(R.id.rl_pb_container_progress);
+        flContainerProgress = (FrameLayout) findViewById(R.id.fl_pb_container_progress);
         dlChat = (AutoExitDrawerLayout) findViewById(R.id.dl_pb_chat);
+        flAreaSwitch = (PBDragFrameLayout) findViewById(R.id.dfl_pb_container_freedom_small);
+        flContainerBig = (FrameLayout) findViewById(R.id.fl_pb_container_big);
+        flContainerSmall = (FrameLayout) findViewById(R.id.fl_pb_container_small);
+        ivChatSwitch = (ImageView) findViewById(R.id.iv_pb_chat_switch);
+
         dlChat.openDrawer(Gravity.START);
+        dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
     private void initListeners() {
@@ -81,6 +91,19 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             @Override
             public void onClick(View v) {
                 mPlayerView.playVideo();
+            }
+        });
+        flAreaSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 17/8/18 switch ppt and video
+                switchPPTAndVideo();
+            }
+        });
+        ivChatSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 17/8/18 横屏状态打开和关闭聊天fragment
             }
         });
         onPlayerListener = new OnPlayerListener() {
@@ -151,7 +174,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         mPlayerView.enableBrightnessGesture(false);
         mPlayerView.enableSeekGesture(false);
         mPlayerView.enableVolumeGesture(false);
-        rlContainerProgress.addView(view);
+        mPlayerView.setForbidConfiguration(true);
+
+        flContainerProgress.addView(view);
         //enter room action
         switch (deployType) {
             case 0:
@@ -210,7 +235,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptFragment = new LPPPTFragment();
         pptFragment.setLiveRoom(mRoom);
         pptFragment.setFlingEnable(false);
-        addFragment(R.id.rl_pb_container_big, pptFragment);
+        addFragment(R.id.fl_pb_container_big, pptFragment);
     }
 
     private <V extends PBBaseView, P extends PBBasePresenter> void bindVP(V view, P presenter) {
@@ -221,14 +246,87 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (mPlayerView != null) {
-            mPlayerView.onConfigurationChanged(newConfig);
-        }
+        // TODO: 17/8/18 横竖屏切换逻辑
+        doOnBigContainerConfigurationChanged(newConfig);
+        doOnSmallContainerConfigurationChanged(newConfig);
+        doOnChatDrawerConfigurationChanged(newConfig);
     }
+
+    /**
+     * 上方big container
+     */
+    private void doOnBigContainerConfigurationChanged(Configuration newConfig) {
+        RelativeLayout.LayoutParams lpBigContainer = (RelativeLayout.LayoutParams) flContainerBig.getLayoutParams();
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            lpBigContainer.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            lpBigContainer.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            lpBigContainer.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            lpBigContainer.height = PBDisplayUtils.dip2px(this, 240);
+        }
+        flContainerBig.setLayoutParams(lpBigContainer);
+    }
+
+    /**
+     * 下方small container
+     */
+    private void doOnSmallContainerConfigurationChanged(Configuration newConfig) {
+        RelativeLayout.LayoutParams lpSmallContainer = (RelativeLayout.LayoutParams) flContainerSmall.getLayoutParams();
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            lpSmallContainer.width = PBDisplayUtils.dip2px(this, 150);
+            lpSmallContainer.height = PBDisplayUtils.dip2px(this, 90);
+            lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+        } else {
+            lpSmallContainer.width = PBDisplayUtils.dip2px(this, 150);
+            lpSmallContainer.height = PBDisplayUtils.dip2px(this, 90);
+            lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+            lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+            lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            lpSmallContainer.addRule(RelativeLayout.BELOW, R.id.fl_pb_container_big);
+        }
+        flContainerSmall.setLayoutParams(lpSmallContainer);
+    }
+
+    /**
+     * 聊天drawer
+     */
+    private void doOnChatDrawerConfigurationChanged(Configuration newConfig) {
+        RelativeLayout.LayoutParams lpChatDrawer = (RelativeLayout.LayoutParams) dlChat.getLayoutParams();
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            lpChatDrawer.width = PBDisplayUtils.dip2px(this, 268);
+            lpChatDrawer.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            if (flContainerSmall.getVisibility() == View.VISIBLE) {
+                lpChatDrawer.addRule(RelativeLayout.BELOW, R.id.fl_pb_container_small);
+            } else {
+                lpChatDrawer.addRule(RelativeLayout.BELOW, R.id.view_pb_anchor_left_top);
+            }
+            lpChatDrawer.addRule(RelativeLayout.ABOVE, R.id.iv_pb_chat_switch);
+            ivChatSwitch.setVisibility(View.VISIBLE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            lpChatDrawer.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            lpChatDrawer.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            lpChatDrawer.addRule(RelativeLayout.BELOW, R.id.fl_pb_container_big);
+            lpChatDrawer.addRule(RelativeLayout.ABOVE, 0);
+            ivChatSwitch.setVisibility(View.GONE);
+        }
+        dlChat.setLayoutParams(lpChatDrawer);
+    }
+
 
     @Override
     public void onBackPressed() {
-        if (!mPlayerView.onBackPressed()) {
+        // TODO: 17/8/18 横屏返回到竖屏，竖屏走点击关闭逻辑
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
             super.onBackPressed();
         }
     }
@@ -254,6 +352,33 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         super.onDestroy();
         if (mRoom != null) {
             mRoom.quitRoom();
+        }
+    }
+
+    /**
+     * 交换ppt和video视图
+     */
+    private void switchPPTAndVideo() {
+        View bigView = flContainerBig.getChildAt(0);
+        View smallView = flContainerSmall.getChildAt(0);
+        pptFragment.onPause();
+
+        flContainerBig.removeView(bigView);
+        flContainerSmall.removeView(smallView);
+        flContainerBig.addView(smallView);
+        flContainerSmall.addView(bigView);
+
+        pptFragment.onResume();
+
+        View surface;
+        if (bigView instanceof BJPlayerView) {
+            surface = ((BJPlayerView) bigView).getVideoView().getChildAt(0);
+            ((SurfaceView) surface).setZOrderMediaOverlay(true);
+            ((SurfaceView) ((FrameLayout) ((RelativeLayout) smallView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(false);
+        } else {
+            surface = ((BJPlayerView) smallView).getVideoView().getChildAt(0);
+            ((SurfaceView) ((FrameLayout) ((RelativeLayout) bigView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(true);
+            ((SurfaceView) surface).setZOrderMediaOverlay(false);
         }
     }
 }

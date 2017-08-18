@@ -5,7 +5,7 @@
     android:layout_height="55dp"
     android:layout_gravity="bottom"
     android:gravity="center_vertical"
-    android:background="#7eb999"
+    android:background="#6a7eb999"
     android:orientation="horizontal">
 
     <ImageView

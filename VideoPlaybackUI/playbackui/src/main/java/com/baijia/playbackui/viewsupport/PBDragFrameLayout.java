@@ -33,59 +33,46 @@ public class PBDragFrameLayout extends FrameLayout {
         screenHeight = metric.heightPixels;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                lastX = (int) event.getRawX();
-                lastY = (int) event.getRawY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                int dx = (int) event.getRawX() - lastX;
-                int dy = (int) event.getRawY() - lastY;
-
-                left = getLeft() + dx;
-                top = getTop() + dy;
-                right = getRight() + dx;
-                bottom = getBottom() + dy;
-//                setLeft(left);
-//                setRight(right);
-//                setTop(top);
-//                setBottom(bottom);
-//                setX(event.getRawX());
-//                setY(event.getRawY());
-//                setTranslationX(event.getRawX());
-//                setTranslationY(event.getRawY());
-                if (left < 0) {
-                    left = 0;
-                    right = left + getWidth();
-                }
-                if (right > screenWidth) {
-                    right = screenWidth;
-                    left = right - getWidth();
-                }
-                if (top < 0) {
-                    top = 0;
-                    bottom = top + getHeight();
-                }
-                if (bottom > screenHeight) {
-                    bottom = screenHeight;
-                    top = screenHeight - getHeight();
-                }
-                layout(left, top, right, bottom);
-                lastX = (int) event.getRawX();
-                lastY = (int) event.getRawY();
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
-
 //    @Override
-//    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-//        super.onLayout(changed, this.left, this.top, this.right, this.bottom);
+//    public boolean onTouchEvent(MotionEvent event) {
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                lastX = (int) event.getRawX();
+//                lastY = (int) event.getRawY();
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                int dx = (int) event.getRawX() - lastX;
+//                int dy = (int) event.getRawY() - lastY;
+//
+//                left = getLeft() + dx;
+//                top = getTop() + dy;
+//                right = getRight() + dx;
+//                bottom = getBottom() + dy;
+//                if (left < 0) {
+//                    left = 0;
+//                    right = left + getWidth();
+//                }
+//                if (right > screenWidth) {
+//                    right = screenWidth;
+//                    left = right - getWidth();
+//                }
+//                if (top < 0) {
+//                    top = 0;
+//                    bottom = top + getHeight();
+//                }
+//                if (bottom > screenHeight) {
+//                    bottom = screenHeight;
+//                    top = screenHeight - getHeight();
+//                }
+//                layout(left, top, right, bottom);
+//                lastX = (int) event.getRawX();
+//                lastY = (int) event.getRawY();
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                break;
+//            default:
+//                break;
+//        }
+//        return true;
 //    }
 }
