@@ -82,22 +82,33 @@
             app:bottom_controller="@layout/pb_player_view_null"
             app:top_controller="@layout/pb_player_view_null">
 
-
         </com.baijiahulian.player.BJPlayerView>
 
     </FrameLayout>
 
+    <!--清晰度和倍速的容器-->
+    <FrameLayout
+        android:id="@+id/fl_pb_container_definition_and_rate"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@id/fl_pb_container_big"
+        android:visibility="visible">
 
-    <com.baijia.playbackui.viewsupport.PBDragFrameLayout
-        android:id="@+id/dfl_pb_container_freedom_small"
+    </FrameLayout>
+
+    <!--视频和ppt切换开关-->
+    <FrameLayout
+        android:id="@+id/fl_pb_container_freedom_small"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_above="@id/fl_pb_container_progress"
         android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="95dp"
         android:background="#0d29dc">
 
-    </com.baijia.playbackui.viewsupport.PBDragFrameLayout>
+    </FrameLayout>
 
 
 </RelativeLayout>

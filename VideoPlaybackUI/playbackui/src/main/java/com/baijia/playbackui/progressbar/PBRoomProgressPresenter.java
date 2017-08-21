@@ -6,11 +6,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.baijia.playbackui.R;
+import com.baijia.playbackui.activity.PBRouterListener;
 import com.baijia.playbackui.utils.StringUtils;
 import com.baijiahulian.player.BJPlayerView;
-import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.IPlayerBottomContact;
-import com.baijiahulian.player.playerview.IPlayerCenterContact;
 import com.baijiahulian.player.playerview.IPlayerTopContact;
 
 /**
@@ -18,20 +17,21 @@ import com.baijiahulian.player.playerview.IPlayerTopContact;
  * 播放器控制条,整合所有控制视图
  */
 
-public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlayerBottomContact.BottomView{
+public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlayerBottomContact.BottomView {
     //view
-    private View view;
     private BJPlayerView mPlayerView;
-    private ImageView ivStartPause, ivDefinition, ivRate, ivSwitchScreen;
-    private TextView tvCurrent, tvTotal;
+    private ImageView ivStartPause, ivSwitchScreen;
+    private TextView tvCurrent, tvTotal, tvDefinition, tvRate;
     private SeekBar sbMain;
 
     //data
     private int totalDuration; //总时长
     private int curDuration;  //当前时长
 
+    //listener
+    private PBRouterListener routerListener;
+
     public PBRoomProgressPresenter(View view, BJPlayerView playerView) {
-        this.view = view;
         this.mPlayerView = playerView;
         initView(view);
         initListener();
@@ -39,8 +39,8 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
 
     private void initView(View view) {
         ivStartPause = (ImageView) view.findViewById(R.id.iv_pb_progress_start_pause);
-        ivDefinition = (ImageView) view.findViewById(R.id.iv_pb_progress_definition);
-        ivRate = (ImageView) view.findViewById(R.id.iv_pb_progress_rate);
+        tvDefinition = (TextView) view.findViewById(R.id.tv_pb_progress_definition);
+        tvRate = (TextView) view.findViewById(R.id.tv_pb_progress_rate);
         ivSwitchScreen = (ImageView) view.findViewById(R.id.iv_pb_progress_switch_screen);
         tvCurrent = (TextView) view.findViewById(R.id.tv_pb_progress_current_time);
         tvTotal = (TextView) view.findViewById(R.id.tv_pb_progress_total_time);
@@ -88,6 +88,24 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
                     mPlayerView.seekVideo(pos);
                 }
                 userTouch = false;
+            }
+        });
+        tvDefinition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 17/8/18 弹出清晰度弹窗
+                if (routerListener != null) {
+                    routerListener.showChoseDefinitionDlg();
+                }
+            }
+        });
+        tvRate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 17/8/18 弹出倍速选择弹窗
+                if (routerListener != null) {
+                    routerListener.showChoseRateDlg();
+                }
             }
         });
     }
@@ -150,5 +168,9 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
         tvCurrent.setText(positionText);
         tvTotal.setText(durationText);
         sbMain.setProgress(totalDuration == 0 ? 0 : curDuration * 100 / totalDuration);
+    }
+
+    public void setRouterListener(PBRouterListener routerListener) {
+        this.routerListener = routerListener;
     }
 }

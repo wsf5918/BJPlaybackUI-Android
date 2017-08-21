@@ -5,4 +5,13 @@ package com.baijia.playbackui.activity;
  */
 
 public interface PBRouterListener {
+    /**
+     * 选择清晰度
+     */
+    void showChoseDefinitionDlg();
+
+    /**
+     * 选择播放倍速
+     */
+    void showChoseRateDlg();
 }

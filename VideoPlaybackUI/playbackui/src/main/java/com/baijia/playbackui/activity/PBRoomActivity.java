@@ -48,7 +48,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private ImageView ivQuitRoom, ivChatSwitch;
     private PBRoomProgressPresenter progressPresenter;
     private AutoExitDrawerLayout dlChat;
-    private PBDragFrameLayout flAreaSwitch;
+    private FrameLayout flAreaSwitch;
 
     //fragment
     private PBChatFragment chatFragment;
@@ -59,8 +59,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private String roomId, roomToken;
     private int deployType;
 
-    //listener
-    private OnPlayerListener onPlayerListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +75,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         mPlayerView = (BJPlayerView) findViewById(R.id.pb_pv_main);
         flContainerProgress = (FrameLayout) findViewById(R.id.fl_pb_container_progress);
         dlChat = (AutoExitDrawerLayout) findViewById(R.id.dl_pb_chat);
-        flAreaSwitch = (PBDragFrameLayout) findViewById(R.id.dfl_pb_container_freedom_small);
+        flAreaSwitch = (FrameLayout) findViewById(R.id.fl_pb_container_freedom_small);
         flContainerBig = (FrameLayout) findViewById(R.id.fl_pb_container_big);
         flContainerSmall = (FrameLayout) findViewById(R.id.fl_pb_container_small);
         ivChatSwitch = (ImageView) findViewById(R.id.iv_pb_chat_switch);
@@ -90,7 +88,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         ivQuitRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPlayerView.playVideo();
+                finish();
             }
         });
         flAreaSwitch.setOnClickListener(new View.OnClickListener() {
@@ -106,47 +104,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 // TODO: 17/8/18 横屏状态打开和关闭聊天fragment
             }
         });
-        onPlayerListener = new OnPlayerListener() {
-            @Override
-            public void onVideoInfoInitialized(BJPlayerView bjPlayerView, long l, HttpException e) {
-
-            }
-
-            @Override
-            public void onError(BJPlayerView bjPlayerView, int i) {
-
-            }
-
-            @Override
-            public void onUpdatePosition(BJPlayerView bjPlayerView, int i) {
-
-            }
-
-            @Override
-            public void onSeekComplete(BJPlayerView bjPlayerView, int i) {
-
-            }
-
-            @Override
-            public void onSpeedUp(BJPlayerView bjPlayerView, float v) {
-
-            }
-
-            @Override
-            public void onVideoDefinition(BJPlayerView bjPlayerView, int i) {
-
-            }
-
-            @Override
-            public void onPlayCompleted(BJPlayerView bjPlayerView, VideoItem videoItem, SectionItem sectionItem) {
-
-            }
-
-            @Override
-            public void onVideoPrepared(BJPlayerView bjPlayerView) {
-
-            }
-        };
     }
 
     private void initData() {
@@ -166,8 +123,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     private void doEnterRoom() {
         View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
-        //init player view
         progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
+        progressPresenter.setRouterListener(this);
+
         mPlayerView.setTopPresenter(progressPresenter);
         mPlayerView.setBottomPresenter(progressPresenter);
         mPlayerView.setCenterPresenter(new BJCenterViewPresenter(mPlayerView.getCenterView()));
@@ -380,5 +338,58 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             ((SurfaceView) ((FrameLayout) ((RelativeLayout) bigView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(true);
             ((SurfaceView) surface).setZOrderMediaOverlay(false);
         }
+    }
+
+    //播放器回调
+    private OnPlayerListener onPlayerListener = new OnPlayerListener() {
+        @Override
+        public void onVideoInfoInitialized(BJPlayerView playerView, long duration, HttpException exception) {
+
+        }
+
+        @Override
+        public void onError(BJPlayerView playerView, int code) {
+
+        }
+
+        @Override
+        public void onUpdatePosition(BJPlayerView playerView, int position) {
+
+        }
+
+        @Override
+        public void onSeekComplete(BJPlayerView playerView, int position) {
+
+        }
+
+        @Override
+        public void onSpeedUp(BJPlayerView playerView, float speedUp) {
+
+        }
+
+        @Override
+        public void onVideoDefinition(BJPlayerView playerView, int definition) {
+
+        }
+
+        @Override
+        public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
+
+        }
+
+        @Override
+        public void onVideoPrepared(BJPlayerView playerView) {
+
+        }
+    };
+
+    @Override
+    public void showChoseDefinitionDlg() {
+
+    }
+
+    @Override
+    public void showChoseRateDlg() {
+
     }
 }

@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="55dp"
     android:layout_gravity="bottom"
-    android:gravity="center_vertical"
     android:background="#6a7eb999"
+    android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <ImageView
@@ -19,44 +19,55 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tv_pb_progress_current_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            tools:text="12:03" />
-
-        <TextView
-            android:id="@+id/tv_pb_progress_total_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            tools:text="19:23" />
-
         <SeekBar
             android:id="@+id/sb_pb_progress_main"
             style="@style/bjplayer_SeekBarTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/tv_pb_progress_total_time"
-            android:layout_toRightOf="@id/tv_pb_progress_current_time"
             android:max="100" />
+
+        <TextView
+            android:id="@+id/tv_pb_progress_current_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/sb_pb_progress_main"
+            android:layout_below="@id/sb_pb_progress_main"
+            android:layout_centerVertical="true"
+            tools:text="12:03" />
+
+        <TextView
+            android:id="@+id/tv_pb_progress_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sb_pb_progress_main"
+            android:layout_toRightOf="@id/tv_pb_progress_current_time"
+            android:text="/" />
+
+        <TextView
+            android:id="@+id/tv_pb_progress_total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sb_pb_progress_main"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/tv_pb_progress_separator"
+            tools:text="19:23" />
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/iv_pb_progress_definition"
+    <TextView
+        android:id="@+id/tv_pb_progress_definition"
         android:layout_width="30dp"
         android:layout_height="match_parent"
-        android:src="@drawable/pb_ic_exit" />
+        android:gravity="center_vertical"
+        android:text="超清" />
 
-    <ImageView
-        android:id="@+id/iv_pb_progress_rate"
+    <TextView
+        android:id="@+id/tv_pb_progress_rate"
         android:layout_width="30dp"
         android:layout_height="match_parent"
-        android:src="@drawable/pb_ic_exit" />
+        android:gravity="center_vertical"
+        android:text="1.0x" />
 
     <ImageView
         android:id="@+id/iv_pb_progress_switch_screen"

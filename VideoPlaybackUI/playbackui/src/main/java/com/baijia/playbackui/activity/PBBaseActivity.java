@@ -1,5 +1,6 @@
 package com.baijia.playbackui.activity;
 
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -22,5 +23,17 @@ public class PBBaseActivity extends AppCompatActivity {
             transaction.add(layoutId, fragment, fragmentTag);
         }
         transaction.commitAllowingStateLoss();
+    }
+
+    protected void removeFragment(Fragment fragment) {
+        if (fragment == null) return;
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.remove(fragment);
+        if (Build.VERSION.SDK_INT >= 24) {
+            transaction.commitNowAllowingStateLoss();
+        } else {
+            transaction.commitAllowingStateLoss();
+        }
+
     }
 }
