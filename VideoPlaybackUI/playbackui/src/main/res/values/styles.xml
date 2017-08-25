@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Dialog_FullScreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <style name="bottom_menu_animation">
+        <item name="@android:windowEnterAnimation">@anim/bottom_menu_appear</item>
+        <item name="@android:windowExitAnimation">@anim/bottom_menu_disappear</item>
+    </style>
+</resources>

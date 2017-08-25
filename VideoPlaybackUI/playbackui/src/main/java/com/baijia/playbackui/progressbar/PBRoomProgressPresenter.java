@@ -21,7 +21,7 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
     //view
     private BJPlayerView mPlayerView;
     private ImageView ivStartPause, ivSwitchScreen;
-    private TextView tvCurrent, tvTotal, tvDefinition, tvRate;
+    private TextView tvCurrent, tvTotal, tvDefinition, tvRate, tvDivider;
     private SeekBar sbMain;
 
     //data
@@ -43,6 +43,7 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
         tvRate = (TextView) view.findViewById(R.id.tv_pb_progress_rate);
         ivSwitchScreen = (ImageView) view.findViewById(R.id.iv_pb_progress_switch_screen);
         tvCurrent = (TextView) view.findViewById(R.id.tv_pb_progress_current_time);
+        tvDivider = (TextView) view.findViewById(R.id.tv_pb_progress_separator);
         tvTotal = (TextView) view.findViewById(R.id.tv_pb_progress_total_time);
         sbMain = (SeekBar) view.findViewById(R.id.sb_pb_progress_main);
     }
@@ -65,7 +66,13 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
             public void onClick(View v) {
                 if (mPlayerView != null) {
                     mPlayerView.switchOrientation();
+                    if (mPlayerView.getOrientation() == BJPlayerView.VIDEO_ORIENTATION_LANDSCAPE) {
+                        ivSwitchScreen.setImageResource(R.drawable.ic_video_back_fullscreen);
+                    } else {
+                        ivSwitchScreen.setImageResource(R.drawable.ic_video_back_huanyuan);
+                    }
                 }
+
             }
         });
         sbMain.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -156,9 +163,9 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
     @Override
     public void setIsPlaying(boolean isPlaying) {
         if (isPlaying) {
-            ivStartPause.setImageResource(R.drawable.bjplayer_ic_back);
+            ivStartPause.setBackgroundResource(R.drawable.ic_video_back_pause);
         } else {
-            ivStartPause.setImageResource(R.drawable.pb_ic_exit);
+            ivStartPause.setBackgroundResource(R.drawable.ic_video_back_play);
         }
     }
 
@@ -166,11 +173,20 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
         String durationText = StringUtils.formatDurationPB(totalDuration);
         String positionText = StringUtils.formatDurationPB(curDuration, totalDuration >= 3600);
         tvCurrent.setText(positionText);
+        tvDivider.setVisibility(View.VISIBLE);
         tvTotal.setText(durationText);
         sbMain.setProgress(totalDuration == 0 ? 0 : curDuration * 100 / totalDuration);
     }
 
     public void setRouterListener(PBRouterListener routerListener) {
         this.routerListener = routerListener;
+    }
+
+    public void setDefinition(String definition) {
+        tvDefinition.setText(definition.substring(0, 2));
+    }
+
+    public void setRate(String rate) {
+        tvRate.setText(rate);
     }
 }

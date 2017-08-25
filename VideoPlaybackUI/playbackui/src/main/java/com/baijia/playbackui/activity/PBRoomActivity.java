@@ -3,6 +3,7 @@ package com.baijia.playbackui.activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,9 +13,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.baijia.playbackui.R;
 import com.baijia.playbackui.base.PBBasePresenter;
@@ -25,7 +27,6 @@ import com.baijia.playbackui.progressbar.PBRoomProgressPresenter;
 import com.baijia.playbackui.utils.ConstantUtil;
 import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijia.playbackui.viewsupport.AutoExitDrawerLayout;
-import com.baijia.playbackui.viewsupport.PBDragFrameLayout;
 import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
@@ -49,6 +50,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private PBRoomProgressPresenter progressPresenter;
     private AutoExitDrawerLayout dlChat;
     private FrameLayout flAreaSwitch;
+    private LinearLayout rateView;
+    private LinearLayout definitionView;
+    private TextView definitionLow;
+    private TextView definitionMiddle;
+    private TextView definitionHigh;
+    private TextView rateLow;
+    private TextView rateMiddle;
+    private TextView rateHigh;
 
     //fragment
     private PBChatFragment chatFragment;
@@ -79,9 +88,29 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerBig = (FrameLayout) findViewById(R.id.fl_pb_container_big);
         flContainerSmall = (FrameLayout) findViewById(R.id.fl_pb_container_small);
         ivChatSwitch = (ImageView) findViewById(R.id.iv_pb_chat_switch);
+        rateView = (LinearLayout) findViewById(R.id.fl_pb_container_rate);
+        rateLow = (TextView) findViewById(R.id.fragment_definition_1_0x);
+        rateMiddle = (TextView) findViewById(R.id.fragment_definition_2_0x);
+        rateHigh = (TextView) findViewById(R.id.fragment_definition_3_0x);
+        definitionView = (LinearLayout) findViewById(R.id.fl_pb_container_definition);
+        definitionHigh = (TextView) findViewById(R.id.fragment_definition_720P);
+        definitionMiddle = (TextView) findViewById(R.id.fragment_definition_480P);
+        definitionLow = (TextView) findViewById(R.id.fragment_definition_270P);
 
         dlChat.openDrawer(Gravity.START);
         dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        initSmallLayoutParams();
+    }
+
+    private void initSmallLayoutParams() {
+        RelativeLayout.LayoutParams lpSmallContainer = (RelativeLayout.LayoutParams) flContainerSmall.getLayoutParams();
+        lpSmallContainer.width = PBDisplayUtils.dip2px(this, 150);
+        lpSmallContainer.height = PBDisplayUtils.dip2px(this, 90);
+        lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+        lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpSmallContainer.addRule(RelativeLayout.BELOW, R.id.fl_pb_container_big);
+        flContainerSmall.setLayoutParams(lpSmallContainer);
     }
 
     private void initListeners() {
@@ -102,8 +131,96 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             @Override
             public void onClick(View v) {
                 // TODO: 17/8/18 横屏状态打开和关闭聊天fragment
+                if (dlChat.isDrawerOpen(GravityCompat.START)) {
+                    dlChat.closeDrawers();
+                    ivChatSwitch.setImageResource(R.drawable.ic_video_back_sentmsg_no_on);
+                } else {
+                    dlChat.openDrawer(Gravity.LEFT);
+                    ivChatSwitch.setImageResource(R.drawable.ic_video_back_sentmsg_no);
+                }
             }
         });
+        rateLow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rateMiddle.setBackgroundResource(0);
+                rateHigh.setBackgroundResource(0);
+                rateLow.setBackgroundResource(R.drawable.shape_definition_bg);
+                flContainerProgress.setVisibility(View.VISIBLE);
+                rateView.setVisibility(View.GONE);
+                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_1_1_X);
+                setRate(rateLow.getText().toString());
+            }
+        });
+        rateMiddle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rateLow.setBackgroundResource(0);
+                rateHigh.setBackgroundResource(0);
+                rateMiddle.setBackgroundResource(R.drawable.shape_definition_bg);
+                flContainerProgress.setVisibility(View.VISIBLE);
+                rateView.setVisibility(View.GONE);
+                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_1_5_X);
+                setRate(rateMiddle.getText().toString());
+            }
+        });
+        rateHigh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rateLow.setBackgroundResource(0);
+                rateMiddle.setBackgroundResource(0);
+                rateHigh.setBackgroundResource(R.drawable.shape_definition_bg);
+                flContainerProgress.setVisibility(View.VISIBLE);
+                rateView.setVisibility(View.GONE);
+                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_2_X);
+                setRate(rateHigh.getText().toString());
+            }
+        });
+        definitionLow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                definitionHigh.setBackgroundResource(0);
+                definitionMiddle.setBackgroundResource(0);
+                definitionLow.setBackgroundResource(R.drawable.shape_definition_bg);
+                flContainerProgress.setVisibility(View.VISIBLE);
+                definitionView.setVisibility(View.GONE);
+                mPlayerView.setVideoDefinition(BJPlayerView.VIDEO_DEFINITION_STD);
+                setDefinition(definitionLow.getText().toString());
+            }
+        });
+        definitionMiddle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                definitionHigh.setBackgroundResource(0);
+                definitionLow.setBackgroundResource(0);
+                definitionMiddle.setBackgroundResource(R.drawable.shape_definition_bg);
+                flContainerProgress.setVisibility(View.VISIBLE);
+                definitionView.setVisibility(View.GONE);
+                mPlayerView.setVideoDefinition(BJPlayerView.VIDEO_DEFINITION_HIGH);
+                setDefinition(definitionMiddle.getText().toString());
+            }
+        });
+        definitionHigh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                definitionLow.setBackgroundResource(0);
+                definitionMiddle.setBackgroundResource(0);
+                definitionHigh.setBackgroundResource(R.drawable.shape_definition_bg);
+                flContainerProgress.setVisibility(View.VISIBLE);
+                definitionView.setVisibility(View.GONE);
+                mPlayerView.setVideoDefinition(BJPlayerView.VIDEO_DEFINITION_SUPER);
+                setDefinition(definitionHigh.getText().toString());
+            }
+        });
+
+    }
+
+    public void setRate(String rate) {
+        progressPresenter.setRate(rate);
+    }
+
+    public void setDefinition(String definition) {
+        progressPresenter.setDefinition(definition);
     }
 
     private void initData() {
@@ -229,13 +346,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      * 下方small container
      */
     private void doOnSmallContainerConfigurationChanged(Configuration newConfig) {
-        RelativeLayout.LayoutParams lpSmallContainer = (RelativeLayout.LayoutParams) flContainerSmall.getLayoutParams();
+        RelativeLayout.LayoutParams lpSmallContainer = new RelativeLayout.LayoutParams(PBDisplayUtils.dip2px(this, 150), PBDisplayUtils.dip2px(this, 90));
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            lpSmallContainer.width = PBDisplayUtils.dip2px(this, 150);
-            lpSmallContainer.height = PBDisplayUtils.dip2px(this, 90);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+            lpSmallContainer.addRule(RelativeLayout.BELOW, 0);
         } else {
             lpSmallContainer.width = PBDisplayUtils.dip2px(this, 150);
             lpSmallContainer.height = PBDisplayUtils.dip2px(this, 90);
@@ -256,10 +372,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            lpChatDrawer.width = PBDisplayUtils.dip2px(this, 268);
+            lpChatDrawer.width = PBDisplayUtils.dip2px(this, 300);
             lpChatDrawer.height = ViewGroup.LayoutParams.MATCH_PARENT;
             if (flContainerSmall.getVisibility() == View.VISIBLE) {
-                lpChatDrawer.addRule(RelativeLayout.BELOW, R.id.fl_pb_container_small);
+                lpChatDrawer.addRule(RelativeLayout.BELOW, R.id.view_pb_anchor_left_top);
             } else {
                 lpChatDrawer.addRule(RelativeLayout.BELOW, R.id.view_pb_anchor_left_top);
             }
@@ -333,10 +449,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             surface = ((BJPlayerView) bigView).getVideoView().getChildAt(0);
             ((SurfaceView) surface).setZOrderMediaOverlay(true);
             ((SurfaceView) ((FrameLayout) ((RelativeLayout) smallView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(false);
+            flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_stopvideo);
         } else {
             surface = ((BJPlayerView) smallView).getVideoView().getChildAt(0);
             ((SurfaceView) ((FrameLayout) ((RelativeLayout) bigView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(true);
             ((SurfaceView) surface).setZOrderMediaOverlay(false);
+            flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
         }
     }
 
@@ -385,11 +503,13 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void showChoseDefinitionDlg() {
-
+        definitionView.setVisibility(View.VISIBLE);
+        flContainerProgress.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showChoseRateDlg() {
-
+        rateView.setVisibility(View.VISIBLE);
+        flContainerProgress.setVisibility(View.INVISIBLE);
     }
 }
