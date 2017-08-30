@@ -32,12 +32,12 @@ dependencies {
     })
 
     //测试
-    compile project(path: ':video-playback') //回放core
-    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
+//    compile project(path: ':video-playback') //回放core
+//    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
 
     //打包
-//    compile 'com.baijia.player:video-playback:0.4.1'
-//    compile 'com.baijia.live:liveplayer-sdk-core-ppt:0.3.11'
+    compile 'com.baijia.player:video-playback:0.4.3-source'
+    compile 'com.baijia.live:liveplayer-sdk-core-ppt:0.3.11'
 
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
