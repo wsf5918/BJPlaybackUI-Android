@@ -53,11 +53,13 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
             @Override
             public void onClick(View v) {
                 if (mPlayerView != null) {
+                    routerListener.changeZhanweiAndVideo();
                     if (mPlayerView.isPlaying()) {
                         mPlayerView.pauseVideo();
                     } else {
                         mPlayerView.playVideo();
                     }
+
                 }
             }
         });
@@ -65,8 +67,8 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
             @Override
             public void onClick(View v) {
                 if (mPlayerView != null) {
-                    mPlayerView.switchOrientation();
-                    if (mPlayerView.getOrientation() == BJPlayerView.VIDEO_ORIENTATION_LANDSCAPE) {
+                    boolean isOrientation = routerListener.changeOrientation();
+                    if (!isOrientation) {
                         ivSwitchScreen.setImageResource(R.drawable.ic_video_back_fullscreen);
                     } else {
                         ivSwitchScreen.setImageResource(R.drawable.ic_video_back_huanyuan);
@@ -184,6 +186,14 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
 
     public void setDefinition(String definition) {
         tvDefinition.setText(definition.substring(0, 2));
+    }
+
+    public void forbidDefinitionChange() {
+        tvDefinition.setEnabled(false);
+    }
+
+    public void openDefinitionChange() {
+        tvDefinition.setEnabled(true);
     }
 
     public void setRate(String rate) {

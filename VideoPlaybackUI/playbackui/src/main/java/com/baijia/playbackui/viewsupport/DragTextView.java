@@ -20,15 +20,21 @@ public class DragTextView extends FrameLayout {
 
     private int lastX = 0;
     private int lastY = 0;
+    private int x1 = 0;
+    private int x2 = 0;
 
     private int screenWidth = 10;
     private int screenHeight = 10;
+    private Context context;
+    private int dx;
+    private int dy;
     RelativeLayout.LayoutParams lpFeedback = new RelativeLayout.LayoutParams(
             DisplayUtils.dip2px(getContext(), 150), DisplayUtils.dip2px(getContext(), 90));
 
     public DragTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initScreenParam(context);
+        this.context = context;
     }
 
     private void initScreenParam(Context context) {
@@ -41,10 +47,20 @@ public class DragTextView extends FrameLayout {
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                Log.e("onGlobal", getLeft() +":" + getTop() +":"+getRight()+":"+getBottom());
+                Log.e("onGlobal", getLeft() + ":" + getTop() + ":" + getRight() + ":" + getBottom());
             }
         });
     }
+
+    public void configurationChanged() {
+        DisplayMetrics metric = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(metric);
+        screenWidth = metric.widthPixels;
+        screenHeight = metric.heightPixels;
+    }
+
+    private int threshold = 0;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -54,52 +70,45 @@ public class DragTextView extends FrameLayout {
                 lastY = (int) event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                int dx = (int) event.getRawX() - lastX;
-                int dy = (int) event.getRawY() - lastY;
+                dx = (int) event.getRawX() - lastX;
+                dy = (int) event.getRawY() - lastY;
 
-                Log.e("onGlobal", "dx:"+dx+"-dy:"+dy);
+                Log.e("onGlobal", "dx:" + dx + "-dy:" + dy);
                 int left = getLeft() + dx;
                 int top = getTop() + dy;
-                int right = getRight() - dx;
-                int bottom = getBottom() - dy;
-//                if (left < 0) {
-//                    left = 0;
-//                    right = left + getWidth();
-//                }
-//                if (right > screenWidth) {
-//                    right = screenWidth;
-//                    left = right - getWidth();
-//                }
-//                if (top < 0) {
-//                    top = 0;
-//                    bottom = top + getHeight();
-//                }
-//                if (bottom > screenHeight) {
-//                    bottom = screenHeight;
-//                    top = screenHeight - getHeight();
-//                }
-                //layout(left, top, right, bottom);
-
-
-//                lpFeedback.leftMargin = this.getLeft();
-//                lpFeedback.topMargin = this.getTop();
-//                RelativeLayout.LayoutParams lpFeedback = (RelativeLayout.LayoutParams) getLayoutParams();
+                int right = getRight() + dx;
+                int bottom = getBottom() + dy;
+                if (left < 0) {
+                    left = 0;
+                    right = left + getWidth();
+                }
+                if (right > screenWidth) {
+                    right = screenWidth;
+                    left = right - getWidth();
+                }
+                if (top < 0) {
+                    top = 0;
+                    bottom = top + getHeight();
+                }
+                if (bottom > screenHeight) {
+                    bottom = screenHeight;
+                    top = screenHeight - getHeight();
+                }
+                layout(left, top, right, bottom);
                 lpFeedback.setMargins(left, top, 0, 0);
                 setLayoutParams(lpFeedback);
-//                measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY);
-//                ((RelativeLayout.LayoutParams)getLayoutParams()).setMargins(left,top,right,bottom);
                 lastX = (int) event.getRawX();
                 lastY = (int) event.getRawY();
-                Log.e("onGlobal", getLeft() +":" + getTop() +":"+getRight()+":"+getBottom());
+                Log.e("onGlobal", getLeft() + ":" + getTop() + ":" + getRight() + ":" + getBottom());
+                threshold = Math.max(threshold, Math.abs(dx) + Math.abs(dy));
                 break;
             case MotionEvent.ACTION_UP:
-
-                break;
-            default:
-                break;
+                if (threshold > 10) {
+                    threshold = 0;
+                    return true;
+                }
         }
-        return true;
-
+        return super.onTouchEvent(event);
     }
 
     @Override

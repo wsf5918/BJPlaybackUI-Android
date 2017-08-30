@@ -1,5 +1,6 @@
 package com.baijia.playbackui.chat;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -35,6 +36,12 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
         mRoom.getChatVM();
     }
 
+    public void setOrientation(int state) {
+        messageAdapter.setOrientation(state);
+        rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvChat.setAdapter(messageAdapter);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +62,7 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
                     @Override
                     public void call(Void aVoid) {
                         messageAdapter.notifyDataSetChanged();
-                        rvChat.scrollToPosition(messageAdapter.getItemCount());
+                        rvChat.smoothScrollToPosition(messageAdapter.getItemCount());
                     }
                 });
     }

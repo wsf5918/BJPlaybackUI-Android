@@ -34,9 +34,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/sb_pb_progress_main"
             android:layout_centerVertical="true"
             android:layout_marginLeft="14dp"
-            android:layout_below="@id/sb_pb_progress_main"
             android:orientation="horizontal">
 
             <TextView
@@ -73,7 +73,7 @@
         android:layout_height="match_parent"
         android:layout_marginRight="13dp"
         android:gravity="center_vertical"
-        android:text="超清"
+        android:text="标清"
         android:textColor="@color/pb_live_white"
         android:textSize="13sp" />
 

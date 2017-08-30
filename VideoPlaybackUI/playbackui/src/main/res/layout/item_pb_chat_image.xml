@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pb_item_chat_image_group"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
@@ -16,7 +17,6 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
         android:layout_marginTop="2dp">
 
         <ImageView
@@ -25,18 +25,18 @@
             android:layout_height="wrap_content"
             android:scaleType="fitCenter" />
 
-        <TextView
-            android:id="@+id/pb_item_chat_image_mask"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_alignBottom="@+id/pb_item_chat_image"
-            android:layout_alignLeft="@+id/pb_item_chat_image"
-            android:layout_alignRight="@+id/pb_item_chat_image"
-            android:layout_alignTop="@+id/pb_item_chat_image"
-            android:background="#123432"
-            android:gravity="center"
-            android:text="dsf"
-            android:textColor="@color/pb_live_white" />
+        <!--<TextView-->
+        <!--android:id="@+id/pb_item_chat_image_mask"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_alignBottom="@+id/pb_item_chat_image"-->
+        <!--android:layout_alignLeft="@+id/pb_item_chat_image"-->
+        <!--android:layout_alignRight="@+id/pb_item_chat_image"-->
+        <!--android:layout_alignTop="@+id/pb_item_chat_image"-->
+        <!--android:background="#123432"-->
+        <!--android:gravity="center"-->
+        <!--android:text="dsf"-->
+        <!--android:textColor="@color/pb_live_white" />-->
 
         <TextView
             android:id="@+id/pb_item_chat_image_exclamation"

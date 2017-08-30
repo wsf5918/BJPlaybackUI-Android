@@ -7,6 +7,12 @@
     <View
         android:id="@+id/view_pb_anchor_left_top"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="110dp" />
+
+    <View
+        android:id="@+id/view_pb_anchor_left_more_top"
+        android:layout_width="0dp"
         android:layout_height="0dp" />
 
     <!--播放器和白板-->
@@ -62,42 +68,29 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_above="@id/fl_pb_container_progress"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
         android:src="@drawable/ic_video_back_sentmsg_no"
         android:visibility="gone" />
 
     <!--下边的小的窗口-->
-    <com.baijia.playbackui.viewsupport.DragTextView
-        android:id="@+id/fl_pb_container_small"
-        android:layout_width="150dp"
-        android:layout_height="90dp"
-        android:background="@drawable/ic_video_back_zhanwei">
-
-        <com.baijiahulian.player.BJPlayerView
-            android:id="@+id/pb_pv_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:aspect_ratio="fit_parent"
-            app:bottom_controller="@layout/pb_player_view_null"
-            app:top_controller="@layout/pb_player_view_null">
-
-        </com.baijiahulian.player.BJPlayerView>
-
-    </com.baijia.playbackui.viewsupport.DragTextView>
-
     <!--清晰度和倍速的容器-->
     <FrameLayout
         android:id="@+id/fl_pb_container_definition_and_rate"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignBottom="@id/fl_pb_container_big"
+        android:gravity="center"
         android:visibility="visible">
+
 
         <LinearLayout
             android:id="@+id/fl_pb_container_rate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerInParent="true"
             android:background="#a0000000"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -105,20 +98,26 @@
                 android:id="@+id/fragment_definition_1_0x"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/shape_definition_bg"
                 android:paddingBottom="5dp"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
                 android:paddingTop="5dp"
                 android:text="1.0x"
-                android:textColor="@color/pb_live_white" />
+                android:textColor="@color/pb_live_blue" />
 
             <TextView
                 android:id="@+id/fragment_definition_2_0x"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
                 android:paddingBottom="5dp"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
@@ -130,7 +129,10 @@
                 android:id="@+id/fragment_definition_3_0x"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
                 android:paddingBottom="5dp"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
@@ -140,69 +142,135 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/fl_pb_container_definition"
+
+        <!--<LinearLayout-->
+        <!--android:id="@+id/fl_pb_container_definition"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:background="#a0000000"-->
+        <!--android:gravity="center"-->
+        <!--android:orientation="vertical"-->
+        <!--android:visibility="gone">-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/fragment_definition_720P"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:paddingBottom="5dp"-->
+        <!--android:paddingLeft="30dp"-->
+        <!--android:paddingRight="30dp"-->
+        <!--android:paddingTop="5dp"-->
+        <!--android:text="超清720P"-->
+        <!--android:textColor="@color/pb_live_white" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/fragment_definition_480P"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:paddingBottom="5dp"-->
+        <!--android:paddingLeft="30dp"-->
+        <!--android:paddingRight="30dp"-->
+        <!--android:paddingTop="5dp"-->
+        <!--android:text="高清480P"-->
+        <!--android:textColor="@color/pb_live_white" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/fragment_definition_270P"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:paddingBottom="5dp"-->
+        <!--android:paddingLeft="30dp"-->
+        <!--android:paddingRight="30dp"-->
+        <!--android:paddingTop="5dp"-->
+        <!--android:text="标清270P"-->
+        <!--android:textColor="@color/pb_live_white" />-->
+
+        <!--</LinearLayout>-->
+
+        <RelativeLayout
+            android:id="@+id/fl_pb_container_definition_rl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#a0000000"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/fragment_definition_720P"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/fl_pb_container_definition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="70dp"
-                android:background="@drawable/shape_definition_bg"
-                android:paddingBottom="5dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:paddingTop="5dp"
-                android:text="超清720P"
-                android:textColor="@color/pb_live_white" />
+                android:layout_centerInParent="true">
 
-            <TextView
-                android:id="@+id/fragment_definition_480P"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:paddingTop="5dp"
-                android:text="高清480P"
-                android:textColor="@color/pb_live_white" />
+            </android.support.v7.widget.RecyclerView>
 
-            <TextView
-                android:id="@+id/fragment_definition_270P"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:paddingTop="5dp"
-                android:text="标清270P"
-                android:textColor="@color/pb_live_white" />
+        </RelativeLayout>
 
-        </LinearLayout>
 
     </FrameLayout>
 
     <!--视频和ppt切换开关-->
     <FrameLayout
         android:id="@+id/fl_pb_container_freedom_small"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_above="@id/fl_pb_container_progress"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="10dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="95dp"
-        android:background="@drawable/ic_video_back_stopvideo">
+        android:background="@drawable/ic_video_back_stopvideo"
+        android:visibility="gone">
 
     </FrameLayout>
+
+    <com.baijia.playbackui.viewsupport.DragTextView
+        android:id="@+id/fl_pb_container_small"
+        android:layout_width="150dp"
+        android:layout_height="90dp"
+        android:clickable="true">
+
+        <com.baijiahulian.player.BJPlayerView
+            android:id="@+id/pb_pv_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:aspect_ratio="fit_parent"
+            app:bottom_controller="@layout/pb_player_view_null"
+            app:top_controller="@layout/pb_player_view_null">
+
+
+        </com.baijiahulian.player.BJPlayerView>
+
+        <RelativeLayout
+            android:id="@+id/rl_pb_name_mask"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/ic_video_back_namemask"
+            android:visibility="invisible">
+
+            <TextView
+                android:id="@+id/pb_name_mask_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:text=""
+                android:textColor="@color/pb_live_white" />
+        </RelativeLayout>
+
+    </com.baijia.playbackui.viewsupport.DragTextView>
 
 
 </RelativeLayout>

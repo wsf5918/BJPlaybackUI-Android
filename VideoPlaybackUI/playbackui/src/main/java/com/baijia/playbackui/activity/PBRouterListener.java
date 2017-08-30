@@ -14,4 +14,18 @@ public interface PBRouterListener {
      * 选择播放倍速
      */
     void showChoseRateDlg();
+
+    /**
+     * 切换视频和站位图
+     */
+    void changeZhanweiAndVideo();
+
+    /**
+     * 切换横屏竖屏
+     */
+    boolean changeOrientation();
+
+    void selectDefinition(String type, int position);
+
+
 }

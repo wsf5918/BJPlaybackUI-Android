@@ -1,6 +1,7 @@
 package com.baijia.playbackui.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baijia.playbackui.R;
@@ -34,11 +36,16 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private Context context;
     private PBRoom mRoom;
     private int emojiSize;
+    private int orientationState;
 
     public PBMessageAdapter(Context context, PBRoom room) {
         this.context = context;
         this.mRoom = room;
         emojiSize = (int) (PBDisplayUtils.getScreenDensity(context) * 32);
+    }
+
+    public void setOrientation(int state) {
+        this.orientationState = state;
     }
 
     @Override
@@ -97,12 +104,24 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             } else {
                 textViewHolder.textView.setAutoLinkMask(0);
             }
+            if (orientationState == Configuration.ORIENTATION_LANDSCAPE) {
+                textViewHolder.textView.setBackgroundResource(R.drawable.shape_pb_live_item_chat_blue_bg);
+                textViewHolder.textView.setTextColor(ContextCompat.getColor(context, R.color.pb_live_white));
+            } else {
+                textViewHolder.textView.setBackgroundResource(R.drawable.shape_pb_live_item_chat_bg);
+                textViewHolder.textView.setTextColor(ContextCompat.getColor(context, R.color.pb_primary_text));
+            }
         } else if (holder instanceof PBImageViewHolder) {
             PBImageViewHolder imageViewHolder = (PBImageViewHolder) holder;
             imageViewHolder.ivImg.setOnClickListener(null);
             imageViewHolder.tvName.setText(spanText);
             Picasso.with(context).load(messageModel.getUrl())
                     .into(imageViewHolder.ivImg);
+            if (orientationState == Configuration.ORIENTATION_LANDSCAPE) {
+                imageViewHolder.chatImageGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_blue_bg);
+            } else {
+                imageViewHolder.chatImageGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_bg);
+            }
         } else if (holder instanceof PBEmojiViewHolder) {
             PBEmojiViewHolder emojiViewHolder = (PBEmojiViewHolder) holder;
             emojiViewHolder.tvName.setText(spanText);
@@ -111,7 +130,13 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .error(R.drawable.pb_ic_exit)
                     .resize(emojiSize, emojiSize)
                     .into(emojiViewHolder.ivEmoji);
+            if (orientationState == Configuration.ORIENTATION_LANDSCAPE) {
+                emojiViewHolder.chatEmojiGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_blue_bg);
+            } else {
+                emojiViewHolder.chatEmojiGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_bg);
+            }
         }
+
     }
 
     @Override
@@ -121,34 +146,40 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private static class PBTextViewHolder extends RecyclerView.ViewHolder {
         private TextView textView;
+        private LinearLayout chatBackGround;
 
         PBTextViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.pb_item_chat_text);
+            chatBackGround = (LinearLayout) itemView.findViewById(R.id.pb_item_chat_group);
         }
     }
 
     private static class PBImageViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvExclamation, tvMask;
         ImageView ivImg;
+        private LinearLayout chatImageGroup;
 
         PBImageViewHolder(View itemView) {
             super(itemView);
             tvName = (TextView) itemView.findViewById(R.id.pb_item_chat_image_name);
             ivImg = (ImageView) itemView.findViewById(R.id.pb_item_chat_image);
             tvExclamation = (TextView) itemView.findViewById(R.id.pb_item_chat_image_exclamation);
-            tvMask = (TextView) itemView.findViewById(R.id.pb_item_chat_image_mask);
+            //tvMask = (TextView) itemView.findViewById(R.id.pb_item_chat_image_mask);
+            chatImageGroup = (LinearLayout) itemView.findViewById(R.id.pb_item_chat_image_group);
         }
     }
 
     private static class PBEmojiViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
         ImageView ivEmoji;
+        LinearLayout chatEmojiGroup;
 
         PBEmojiViewHolder(View itemView) {
             super(itemView);
             tvName = (TextView) itemView.findViewById(R.id.pb_item_chat_emoji_name);
             ivEmoji = (ImageView) itemView.findViewById(R.id.pb_item_chat_emoji);
+            chatEmojiGroup = (LinearLayout) itemView.findViewById(R.id.pb_item_chat_emoji_group);
         }
     }
 }

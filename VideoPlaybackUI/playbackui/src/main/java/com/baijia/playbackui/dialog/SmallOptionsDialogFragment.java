@@ -19,11 +19,11 @@ import com.baijia.playbackui.R;
  * Created by szw on 17/8/20.
  */
 
-public class DefinitionDialogFragment extends DialogFragment implements View.OnClickListener {
-    private CreateClickableListener listener;
-    private TextView definitionLow;
-    private TextView definitionMiddle;
-    private TextView definitionHigh;
+public class SmallOptionsDialogFragment extends DialogFragment implements View.OnClickListener {
+    private OptionsClickableListener listener;
+    private TextView fullScreen;
+    private TextView closeVideo;
+    private TextView cancel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,21 +37,40 @@ public class DefinitionDialogFragment extends DialogFragment implements View.OnC
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().setCanceledOnTouchOutside(true);
         getDialog().getWindow().setWindowAnimations(R.style.bottom_menu_animation);
-        View view = inflater.inflate(R.layout.fragment_definition_dialog, container);
+        View view = inflater.inflate(R.layout.fragment_samll_options_dialog, container);
         initViews(view);
         return view;
     }
 
     private void initViews(View view) {
-        definitionLow = (TextView) view.findViewById(R.id.fragment_definition_1_0x);
-        definitionMiddle = (TextView) view.findViewById(R.id.fragment_definition_2_0x);
-        definitionHigh = (TextView) view.findViewById(R.id.fragment_definition_3_0x);
-        definitionLow.setOnClickListener(this);
-        definitionMiddle.setOnClickListener(this);
-        definitionHigh.setOnClickListener(this);
+        cancel = (TextView) view.findViewById(R.id.fragment_small_options_cancel);
+        fullScreen = (TextView) view.findViewById(R.id.fragment_small_options_full_screen);
+        closeVideo = (TextView) view.findViewById(R.id.fragment_small_options_close_video);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
+        fullScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.fullScreen();
+                dismiss();
+            }
+        });
+
+        closeVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.closeVideo();
+                dismiss();
+            }
+        });
     }
 
-    public void setCreateClickableListener(CreateClickableListener listener) {
+    public void setCreateClickableListener(OptionsClickableListener listener) {
         this.listener = listener;
     }
 
@@ -63,7 +82,7 @@ public class DefinitionDialogFragment extends DialogFragment implements View.OnC
         WindowManager.LayoutParams params = window.getAttributes();
         params.dimAmount = 0.50f;
         params.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-        params.gravity = Gravity.TOP;
+        params.gravity = Gravity.BOTTOM;
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         window.setAttributes(params);
     }
@@ -81,9 +100,9 @@ public class DefinitionDialogFragment extends DialogFragment implements View.OnC
         }
     }
 
-    public interface CreateClickableListener {
-        void createCommonMeeting();
+    public interface OptionsClickableListener {
+        void fullScreen();
 
-        void createImmediateMeeting();
+        void closeVideo();
     }
 }
