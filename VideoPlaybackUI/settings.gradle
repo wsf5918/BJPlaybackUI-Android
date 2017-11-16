@@ -1,8 +1,8 @@
 include ':app', ':playbackui'
-//include ':video-playback'
-//include ':liveplayer-sdk-core'
-//include ':liveplayer-sdk-core-ppt'
-//include ':videoplayer-sdk'
+include ':video-playback'
+include ':liveplayer-sdk-core'
+include ':liveplayer-sdk-core-ppt'
+include ':videoplayer-sdk'
 
 //源码依赖
 //wkf
@@ -17,3 +17,10 @@ include ':app', ':playbackui'
 //project(':liveplayer-sdk-core').projectDir = new File('/Users/bjhl/project/player/liveplayer-android-sdk-core/BJHL-LivePlayer/liveplayer-sdk-core')
 //project(':liveplayer-sdk-core-ppt').projectDir = new File('/Users/bjhl/project/player/liveplayer-android-sdk-core/BJHL-LivePlayer/liveplayer-sdk-core-ppt')
 //project(':videoplayer-sdk').projectDir = new File('/Users/bjhl/project/playback/video-player/VideoPlayer/videoplayer-sdk')
+
+//xyp
+project(':video-playback').projectDir = new File('/Users/bjhl/Developer/BaijiaYunAndroid/android-video-playback/VideoPlayBack/video-playback')
+project(':liveplayer-sdk-core').projectDir = new File('/Users/bjhl/Developer/BaijiaYunAndroid/liveplayer-android-sdk-core/BJHL-LivePlayer/liveplayer-sdk-core')
+project(':liveplayer-sdk-core-ppt').projectDir = new File('/Users/bjhl/Developer/BaijiaYunAndroid/liveplayer-android-sdk-core/BJHL-LivePlayer/liveplayer-sdk-core-ppt')
+project(':videoplayer-sdk').projectDir = new File('/Users/bjhl/Developer/BaijiaYunAndroid/android-video-player/VideoPlayer/videoplayer-sdk')
+
