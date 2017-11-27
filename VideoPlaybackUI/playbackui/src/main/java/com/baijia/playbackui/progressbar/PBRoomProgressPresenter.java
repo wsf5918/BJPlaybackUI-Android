@@ -120,6 +120,12 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
     }
 
     @Override
+    public void setSeekBarDraggable(boolean canDrag) {
+
+    }
+
+
+    @Override
     public void onBind(IPlayerTopContact.IPlayer player) {
 
     }

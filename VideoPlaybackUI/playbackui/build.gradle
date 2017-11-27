@@ -36,8 +36,8 @@ dependencies {
 //    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
 
     //打包
-    compile 'com.baijia.player:video-playback:0.4.3-source'
-    compile 'com.baijia.live:liveplayer-sdk-core-ppt:0.3.11'
+    compile 'com.baijia.player:video-playback:1.1.1'
+    compile 'com.baijia.live:liveplayer-sdk-core-ppt:1.1.0'
 
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'

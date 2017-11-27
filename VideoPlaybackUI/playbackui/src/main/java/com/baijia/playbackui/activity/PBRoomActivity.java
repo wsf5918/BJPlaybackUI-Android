@@ -328,14 +328,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerProgress.addView(view);
         //enter room action
         switch (deployType) {
-            case 0:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Test);
-                break;
-            case 1:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Beta);
-                break;
+//            case 0:
+//                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Test);
+//                break;
+//            case 1:
+//                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Beta);
+//                break;
             case 2:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Product);
+                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
                 break;
             default:
                 break;
