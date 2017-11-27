@@ -396,10 +396,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         //以下两种方式创建离线的回放教室
 
         //传未解压的信令
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频路径", "信令路径");
+//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频路径", "信令路径");
 
         //或者传已经解压的信令
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频文件", "信令路径");
+//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频文件", "信令路径");
 
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
