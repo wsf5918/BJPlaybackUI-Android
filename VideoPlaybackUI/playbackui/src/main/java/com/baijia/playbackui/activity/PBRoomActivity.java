@@ -301,7 +301,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
         roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
         deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
+
+        //进入在线回放教室
         doEnterRoom();
+
+        //进入离线回放教室
+//        doEnterLocalRoom();
     }
 
     private void initLaunchStepDlg() {
@@ -327,19 +332,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         flContainerProgress.addView(view);
         //enter room action
-        switch (deployType) {
-//            case 0:
-//                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Test);
-//                break;
-//            case 1:
-//                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Beta);
-//                break;
-            case 2:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
-                break;
-            default:
-                break;
-        }
+
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
+
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
         mRoom.enterRoom(this);
@@ -380,6 +375,73 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                     }
                 });
         launchStepDlg.show();
+    }
+
+    private void doEnterLocalRoom() {
+        View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
+        progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
+        progressPresenter.setRouterListener(this);
+
+        mPlayerView.setTopPresenter(progressPresenter);
+        mPlayerView.setBottomPresenter(progressPresenter);
+        mPlayerView.setCenterPresenter(new BJCenterViewPresenter(mPlayerView.getCenterView()));
+        mPlayerView.enableBrightnessGesture(false);
+        mPlayerView.enableSeekGesture(false);
+        mPlayerView.enableVolumeGesture(false);
+        mPlayerView.setForbidConfiguration(true);
+
+        flContainerProgress.addView(view);
+        //enter room action
+
+        //以下两种方式创建离线的回放教室
+
+        //传未解压的信令
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频路径", "信令路径");
+
+        //或者传已经解压的信令
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频文件", "信令路径");
+
+        mRoom.bindPlayerView(mPlayerView);
+        mRoom.setOnPlayerListener(onPlayerListener);
+        mRoom.enterRoom(this);
+        mRoom.getObservableOfVideoStatus()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new LPErrorPrintSubscriber<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        View zhanweiView = LayoutInflater.from(PBRoomActivity.this).inflate(R.layout.item_pb_zhanwei_image, null);
+                        View bigView = flContainerBig.getChildAt(0);
+                        View smallView = flContainerSmall.getChildAt(0);
+                        if (isSmallView && !isFistPlay) {
+                            if (!aBoolean) {
+                                progressPresenter.forbidDefinitionChange();
+                                flContainerSmall.removeView(smallView);
+                                flContainerSmall.addView(zhanweiView, 0);
+                                nameMask.setVisibility(View.INVISIBLE);
+                            } else {
+                                progressPresenter.openDefinitionChange();
+                                flContainerSmall.removeView(smallView);
+                                flContainerSmall.addView(mPlayerView, 0);
+                                nameMask.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        if (!isSmallView && !isFistPlay) {
+                            if (!aBoolean) {
+                                progressPresenter.forbidDefinitionChange();
+                                flContainerBig.removeView(bigView);
+                                flContainerBig.addView(zhanweiView, 0);
+                                nameMask.setVisibility(View.INVISIBLE);
+                            } else {
+                                progressPresenter.openDefinitionChange();
+                                flContainerBig.removeView(bigView);
+                                flContainerBig.addView(mPlayerView, 0);
+                                nameMask.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    }
+                });
+        launchStepDlg.show();
+
     }
 
     //进入房间的三个回调
