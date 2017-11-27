@@ -302,6 +302,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
         deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
 
+        // 不区分环境, github上的都是访问正式环境
         //进入在线回放教室
         doEnterRoom();
 
