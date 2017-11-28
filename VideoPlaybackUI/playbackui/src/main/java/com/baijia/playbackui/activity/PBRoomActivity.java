@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +38,6 @@ import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
 import com.baijiahulian.common.networkv2.HttpException;
-import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.context.LPError;
 import com.baijiahulian.livecore.context.LiveRoom;
 import com.baijiahulian.livecore.launch.LPLaunchListener;
@@ -54,8 +52,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.subjects.Subject;
+
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
@@ -335,6 +334,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         //enter room action
 
         mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
+//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), "", "");
 
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
@@ -376,73 +376,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                     }
                 });
         launchStepDlg.show();
-    }
-
-    private void doEnterLocalRoom() {
-        View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
-        progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
-        progressPresenter.setRouterListener(this);
-
-        mPlayerView.setTopPresenter(progressPresenter);
-        mPlayerView.setBottomPresenter(progressPresenter);
-        mPlayerView.setCenterPresenter(new BJCenterViewPresenter(mPlayerView.getCenterView()));
-        mPlayerView.enableBrightnessGesture(false);
-        mPlayerView.enableSeekGesture(false);
-        mPlayerView.enableVolumeGesture(false);
-        mPlayerView.setForbidConfiguration(true);
-
-        flContainerProgress.addView(view);
-        //enter room action
-
-        //以下两种方式创建离线的回放教室
-
-        //传未解压的信令
-//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频路径", "信令路径");
-
-        //或者传已经解压的信令
-//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, "视频文件", "信令路径");
-
-        mRoom.bindPlayerView(mPlayerView);
-        mRoom.setOnPlayerListener(onPlayerListener);
-        mRoom.enterRoom(this);
-        mRoom.getObservableOfVideoStatus()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new LPErrorPrintSubscriber<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        View zhanweiView = LayoutInflater.from(PBRoomActivity.this).inflate(R.layout.item_pb_zhanwei_image, null);
-                        View bigView = flContainerBig.getChildAt(0);
-                        View smallView = flContainerSmall.getChildAt(0);
-                        if (isSmallView && !isFistPlay) {
-                            if (!aBoolean) {
-                                progressPresenter.forbidDefinitionChange();
-                                flContainerSmall.removeView(smallView);
-                                flContainerSmall.addView(zhanweiView, 0);
-                                nameMask.setVisibility(View.INVISIBLE);
-                            } else {
-                                progressPresenter.openDefinitionChange();
-                                flContainerSmall.removeView(smallView);
-                                flContainerSmall.addView(mPlayerView, 0);
-                                nameMask.setVisibility(View.VISIBLE);
-                            }
-                        }
-                        if (!isSmallView && !isFistPlay) {
-                            if (!aBoolean) {
-                                progressPresenter.forbidDefinitionChange();
-                                flContainerBig.removeView(bigView);
-                                flContainerBig.addView(zhanweiView, 0);
-                                nameMask.setVisibility(View.INVISIBLE);
-                            } else {
-                                progressPresenter.openDefinitionChange();
-                                flContainerBig.removeView(bigView);
-                                flContainerBig.addView(mPlayerView, 0);
-                                nameMask.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    }
-                });
-        launchStepDlg.show();
-
     }
 
     //进入房间的三个回调
@@ -482,6 +415,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         pptFragment = new LPPPTFragment();
         pptFragment.setLiveRoom(mRoom);
+        pptFragment.setAnimPPTEnable(false);
         pptFragment.setFlingEnable(false);
         addFragment(R.id.fl_pb_container_big, pptFragment);
         if (mPlayerView != null) {
@@ -527,16 +461,15 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         doOnSmallContainerConfigurationChanged(newConfig);
         doOnChatDrawerConfigurationChanged(newConfig);
         flContainerSmall.configurationChanged();
-        isOrientation = !isOrientation;
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            chatFragment.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        isOrientation = newConfig.orientation == ORIENTATION_PORTRAIT;
+
+        progressPresenter.onOrientationChanged(isOrientation);
+
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
+            chatFragment.setOrientation(ORIENTATION_LANDSCAPE);
         } else {
             chatFragment.setOrientation(Configuration.ORIENTATION_PORTRAIT);
         }
-
-        mPlayerView.removeViewAt(2);
-        mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
-
     }
 
     /**
@@ -544,7 +477,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void doOnBigContainerConfigurationChanged(Configuration newConfig) {
         RelativeLayout.LayoutParams lpBigContainer = (RelativeLayout.LayoutParams) flContainerBig.getLayoutParams();
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
             lpBigContainer.width = ViewGroup.LayoutParams.MATCH_PARENT;
             lpBigContainer.height = ViewGroup.LayoutParams.MATCH_PARENT;
         } else {
@@ -559,7 +492,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void doOnSmallContainerConfigurationChanged(Configuration newConfig) {
         RelativeLayout.LayoutParams lpSmallContainer = new RelativeLayout.LayoutParams(PBDisplayUtils.dip2px(this, 150), PBDisplayUtils.dip2px(this, 90));
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
@@ -580,7 +513,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void doOnChatDrawerConfigurationChanged(Configuration newConfig) {
         RelativeLayout.LayoutParams lpChatDrawer = (RelativeLayout.LayoutParams) dlChat.getLayoutParams();
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -609,7 +542,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void onBackPressed() {
         // TODO: 17/8/18 横屏返回到竖屏，竖屏走点击关闭逻辑
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -682,8 +615,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
 
         }
-        mPlayerView.removeViewAt(2);
-        mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
     }
 
     //播放器回调
@@ -694,8 +625,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionAdapter = new DefinitionAdapter(PBRoomActivity.this, definitionItems);
             definitionAdapter.setRouterListener(PBRoomActivity.this);
             definitionContainer.setAdapter(definitionAdapter);
-            mPlayerView.removeViewAt(2);
-            mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
         }
 
         @Override
@@ -774,7 +703,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public boolean changeOrientation() {
         if (isOrientation) {
-            mPlayerView.switchOrientation();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             rateView.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
             definitionContainer.setLayoutManager(manager);
@@ -786,6 +715,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionContainer.setLayoutManager(manager);
             definitionContainer.setAdapter(definitionAdapter);
         }
+
         return isOrientation;
     }
 
