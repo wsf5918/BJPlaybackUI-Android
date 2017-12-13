@@ -1,7 +1,5 @@
 include ':app', ':playbackui'
 include ':video-playback'
-//include ':liveplayer-sdk-core'
-//include ':liveplayer-sdk-core-ppt'
 include ':videoplayer-sdk'
 
 //源码依赖

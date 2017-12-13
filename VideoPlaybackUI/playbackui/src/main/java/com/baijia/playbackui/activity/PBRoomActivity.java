@@ -326,17 +326,18 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         //enter room action
         switch (deployType) {
             case 0:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Test);
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Test;
                 break;
             case 1:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Beta);
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Beta;
                 break;
             case 2:
-                mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken, LPConstants.LPDeployType.Product);
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
                 break;
             default:
                 break;
         }
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
         mRoom.enterRoom(this);
