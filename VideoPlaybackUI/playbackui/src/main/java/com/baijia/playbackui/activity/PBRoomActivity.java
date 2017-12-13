@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,8 +53,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.subjects.Subject;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
@@ -418,6 +415,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         addFragment(R.id.fl_pb_chat_content_container, chatFragment);
 
         pptFragment = new LPPPTFragment();
+        pptFragment.setAnimPPTEnable(false);
         pptFragment.setLiveRoom(mRoom);
         pptFragment.setFlingEnable(false);
         addFragment(R.id.fl_pb_container_big, pptFragment);

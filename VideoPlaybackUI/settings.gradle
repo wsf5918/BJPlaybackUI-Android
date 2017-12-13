@@ -1,19 +1,9 @@
 include ':app', ':playbackui'
-//include ':video-playback'
+include ':video-playback'
 //include ':liveplayer-sdk-core'
 //include ':liveplayer-sdk-core-ppt'
-//include ':videoplayer-sdk'
+include ':videoplayer-sdk'
 
 //源码依赖
-//wkf
-//project(':video-playback').projectDir = new File('/Users/wangkangfei/project/player/video-playback/VideoPlayBack/video-playback')
-//project(':liveplayer-sdk-core').projectDir = new File('/Users/wangkangfei/project/player/android-live-core/BJHL-LivePlayer/liveplayer-sdk-core')
-//project(':liveplayer-sdk-core-ppt').projectDir = new File('/Users/wangkangfei/project/player/android-live-core/BJHL-LivePlayer/liveplayer-sdk-core-ppt')
-//project(':videoplayer-sdk').projectDir = new File('/Users/wangkangfei/project/player/video-player/VideoPlayer/videoplayer-sdk')
-
-
-//szw
-//project(':video-playback').projectDir = new File('/Users/bjhl/project/playback/video-playback/VideoPlayBack/video-playback')
-//project(':liveplayer-sdk-core').projectDir = new File('/Users/bjhl/project/player/liveplayer-android-sdk-core/BJHL-LivePlayer/liveplayer-sdk-core')
-//project(':liveplayer-sdk-core-ppt').projectDir = new File('/Users/bjhl/project/player/liveplayer-android-sdk-core/BJHL-LivePlayer/liveplayer-sdk-core-ppt')
-//project(':videoplayer-sdk').projectDir = new File('/Users/bjhl/project/playback/video-player/VideoPlayer/videoplayer-sdk')
+project(':video-playback').projectDir = new File('/Users/Shubo/Desktop/workspace/video-playback/VideoPlayBack/video-playback')
+project(':videoplayer-sdk').projectDir = new File('/Users/Shubo/Desktop/workspace/video-player/VideoPlayer/videoplayer-sdk')
