@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 14
@@ -34,13 +34,14 @@ dependencies {
 
     //测试
     compile project(path: ':video-playback') //回放core
-    compile project(path: ':videoplayer-sdk') //点播sdk
-//    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
+//    compile project(path: ':videoplayer-sdk') //点播sdk
+    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
 
     //打包
-    compile 'com.baijia.player:video-playback:1.0.6'
-    compile 'com.baijia.live:liveplayer-sdk-core-ppt:1.0.0'
 
+//    compile 'com.baijia.player:video-playback:1.2.0'
+//    compile 'com.baijia.live:liveplayer-sdk-core-ppt:1.0.0'
+//
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'

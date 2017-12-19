@@ -48,6 +48,7 @@
             android:background="@drawable/shape_pb_live_red_exlamation"
             android:gravity="center"
             android:text="!"
+            android:visibility="gone"
             android:textColor="@color/lp_ppt_bg" />
 
     </RelativeLayout>

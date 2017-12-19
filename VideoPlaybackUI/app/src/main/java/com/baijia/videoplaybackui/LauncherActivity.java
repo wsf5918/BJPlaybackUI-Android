@@ -47,7 +47,7 @@ public class LauncherActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String roomId = etRoomId.getText().toString().trim();
                 String roomToken = etRoomToken.getText().toString().trim();
-                PBRoomUI.enterPBRoom(LauncherActivity.this, roomId, roomToken, deployType, new PBRoomUI.OnEnterPBRoomFailedListener() {
+                PBRoomUI.enterPBRoom(LauncherActivity.this, roomId, roomToken, "-1", deployType, new PBRoomUI.OnEnterPBRoomFailedListener() {
                     @Override
                     public void onEnterPBRoomFailed(String msg) {
                         Toast.makeText(LauncherActivity.this, msg, Toast.LENGTH_SHORT).show();

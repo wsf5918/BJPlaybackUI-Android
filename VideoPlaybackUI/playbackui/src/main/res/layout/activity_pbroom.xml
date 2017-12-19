@@ -21,6 +21,15 @@
         android:layout_width="match_parent"
         android:layout_height="240dp">
 
+
+        <ImageView
+            android:id="@+id/pb_player_big_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_video_back_zhanwei"
+            />
+
     </FrameLayout>
 
     <!--进度条-->
@@ -239,7 +248,18 @@
         android:id="@+id/fl_pb_container_small"
         android:layout_width="150dp"
         android:layout_height="90dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:clickable="true">
+
+        <ImageView
+            android:id="@+id/pb_player_small_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_video_back_zhanwei"
+            />
 
         <com.baijiahulian.player.BJPlayerView
             android:id="@+id/pb_pv_main"
@@ -247,10 +267,8 @@
             android:layout_height="match_parent"
             app:aspect_ratio="fit_parent"
             app:bottom_controller="@layout/pb_player_view_null"
-            app:top_controller="@layout/pb_player_view_null">
+            app:top_controller="@layout/pb_player_view_null"/>
 
-
-        </com.baijiahulian.player.BJPlayerView>
 
         <RelativeLayout
             android:id="@+id/rl_pb_name_mask"
@@ -266,7 +284,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal"
-                android:text=""
                 android:textColor="@color/pb_live_white" />
         </RelativeLayout>
 

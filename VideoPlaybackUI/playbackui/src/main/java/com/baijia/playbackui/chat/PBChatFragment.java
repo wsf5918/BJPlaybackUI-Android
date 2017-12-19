@@ -1,6 +1,5 @@
 package com.baijia.playbackui.chat;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +12,9 @@ import android.view.ViewGroup;
 import com.baijia.playbackui.R;
 import com.baijia.playbackui.adapters.PBMessageAdapter;
 import com.baijia.player.playback.PBRoom;
+import com.baijiahulian.livecore.models.imodels.IMessageModel;
+
+import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -37,9 +39,13 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
     }
 
     public void setOrientation(int state) {
-        messageAdapter.setOrientation(state);
-        rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvChat.setAdapter(messageAdapter);
+        if(messageAdapter != null){
+            messageAdapter.setOrientation(state);
+        }
+        if(rvChat != null){
+            rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
+            rvChat.setAdapter(messageAdapter);
+        }
     }
 
     @Nullable
@@ -58,11 +64,13 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
 
         mRoom.getChatVM().getObservableOfNotifyDataChange()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Action1<List<IMessageModel>>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call(List<IMessageModel> iMessageModels) {
+                        messageAdapter.setMessageModelList(iMessageModels);
                         messageAdapter.notifyDataSetChanged();
-                        rvChat.smoothScrollToPosition(messageAdapter.getItemCount());
+//                        rvChat.smoothScrollToPosition(messageAdapter.getItemCount());
+                        rvChat.scrollToPosition(messageAdapter.getItemCount() - 1);
                     }
                 });
     }

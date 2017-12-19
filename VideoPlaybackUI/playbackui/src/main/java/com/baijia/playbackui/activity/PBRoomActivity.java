@@ -8,6 +8,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -28,7 +29,6 @@ import com.baijia.playbackui.base.PBBasePresenter;
 import com.baijia.playbackui.base.PBBaseView;
 import com.baijia.playbackui.chat.PBChatFragment;
 import com.baijia.playbackui.chat.PBChatPresenter;
-import com.baijia.playbackui.dialog.SmallOptionsDialogFragment;
 import com.baijia.playbackui.progressbar.PBRoomProgressPresenter;
 import com.baijia.playbackui.utils.ConstantUtil;
 import com.baijia.playbackui.utils.PBDisplayUtils;
@@ -80,7 +80,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     //data
     private PBRoom mRoom;
-    private String roomId, roomToken;
+    private String roomId, roomToken, sessionId;
     private int deployType;
     private boolean isSmallView = true;//用来判断当前视频view是否在smallView上
     private boolean isOrientation = true;//用来判断当前是横屏还是竖屏(初始话为竖屏)
@@ -88,7 +88,15 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private List<VideoItem.DefinitionItem> definitionItems = new ArrayList<>();
     private DefinitionAdapter definitionAdapter;
     private int selectPositon = 0;
-    private List<VideoItem.DefinitionItem> definition = new ArrayList<>();
+
+    private boolean videoLunchSuccess = false;
+    private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
+    private static final String PPT_FRAGMENT_TAG = "PPT_FRAGMENT_TAG";
+    private boolean isVideoInfoInitialized = false;
+
+    private ImageView smallPlaceHolder;
+    private ImageView bigPlaceHolder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +115,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         dlChat = (AutoExitDrawerLayout) findViewById(R.id.dl_pb_chat);
         flAreaSwitch = (FrameLayout) findViewById(R.id.fl_pb_container_freedom_small);
         flContainerBig = (FrameLayout) findViewById(R.id.fl_pb_container_big);
+        bigPlaceHolder = (ImageView) findViewById(R.id.pb_player_big_placeholder);
         flContainerSmall = (DragTextView) findViewById(R.id.fl_pb_container_small);
+        smallPlaceHolder = (ImageView) findViewById(R.id.pb_player_small_placeholder);
         ivChatSwitch = (ImageView) findViewById(R.id.iv_pb_chat_switch);
         rateView = (LinearLayout) findViewById(R.id.fl_pb_container_rate);
         rateLow = (TextView) findViewById(R.id.fragment_definition_1_0x);
@@ -158,8 +168,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         lpSmallContainer.addRule(RelativeLayout.BELOW, R.id.fl_pb_container_big);
         flContainerSmall.setLayoutParams(lpSmallContainer);
-        flContainerSmall.removeViewAt(0);
-        flContainerSmall.addView(zhanweiView, 0);
+        flContainerSmall.removeViewAt(1);
     }
 
     private void setSurfaceZOrderMediaOverlayTrue(View view) {
@@ -184,7 +193,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             public void onClick(View v) {
                 flContainerSmall.setVisibility(View.VISIBLE);
                 if (isSmallView) {
-                    flContainerSmall.addView(mPlayerView, 0);
+                    flContainerSmall.addView(mPlayerView, 1);
                     setSurfaceZOrderMediaOverlayTrue(mPlayerView);
                 } else {
                     pptFragment.onStart();
@@ -209,29 +218,39 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerSmall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SmallOptionsDialogFragment fragment = new SmallOptionsDialogFragment();
-                fragment.show(getSupportFragmentManager(), "SmallOptionsFragment");
-                fragment.setCreateClickableListener(new SmallOptionsDialogFragment.OptionsClickableListener() {
-                    @Override
-                    public void fullScreen() {
-                        switchPPTAndVideo();
-                    }
+                if(!videoLunchSuccess){
+                    return;
+                }
+                List<String> options = new ArrayList<>();
+                options.add(getString(R.string.full_screen));
+                options.add(getString(R.string.close));
+                options.add(getString(R.string.cancel));
 
-                    @Override
-                    public void closeVideo() {
-                        flContainerSmall.setVisibility(View.INVISIBLE);
-                        if (isSmallView) {
-                            flContainerSmall.removeViewAt(0);
-                            flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_stopvideo);
-                            flAreaSwitch.setVisibility(View.VISIBLE);
-                        } else {
-                            flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
-                            flAreaSwitch.setVisibility(View.VISIBLE);
-                            pptFragment.onStop();
-                        }
+                new MaterialDialog.Builder(PBRoomActivity.this)
+                        .items(options)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                if(i == 0){
+                                    switchPPTAndVideo();
+                                } else if( i == 1){
+                                    flContainerSmall.setVisibility(View.INVISIBLE);
+                                    if (isSmallView) {
+                                        mPlayerView.onPause();
+                                        flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_stopvideo);
+                                        flAreaSwitch.setVisibility(View.VISIBLE);
+                                    } else {
+                                        flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
+                                        flAreaSwitch.setVisibility(View.VISIBLE);
+                                        pptFragment.onStop();
+                                    }
+                                } else{
 
-                    }
-                });
+                                }
+                                materialDialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -297,6 +316,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private void initData() {
         roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
         roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
+        sessionId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SESSION_ID);
         deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
         doEnterRoom();
     }
@@ -320,7 +340,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         mPlayerView.enableBrightnessGesture(false);
         mPlayerView.enableSeekGesture(false);
         mPlayerView.enableVolumeGesture(false);
-        mPlayerView.setForbidConfiguration(true);
+//        mPlayerView.setForbidConfiguration(true);
 
         flContainerProgress.addView(view);
         //enter room action
@@ -337,7 +357,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             default:
                 break;
         }
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), Long.parseLong(sessionId), roomToken);
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
         mRoom.enterRoom(this);
@@ -346,19 +366,18 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-                        View zhanweiView = LayoutInflater.from(PBRoomActivity.this).inflate(R.layout.item_pb_zhanwei_image, null);
-                        View bigView = flContainerBig.getChildAt(0);
-                        View smallView = flContainerSmall.getChildAt(0);
+                        View bigView = flContainerBig.getChildAt(1);
+                        View smallView = flContainerSmall.getChildAt(1);
                         if (isSmallView && !isFistPlay) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
                                 flContainerSmall.removeView(smallView);
-                                flContainerSmall.addView(zhanweiView, 0);
+                                smallPlaceHolder.setVisibility(View.VISIBLE);
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
-                                flContainerSmall.removeView(smallView);
-                                flContainerSmall.addView(mPlayerView, 0);
+                                smallPlaceHolder.setVisibility(View.GONE);
+                                flContainerSmall.addView(mPlayerView, 1);
                                 nameMask.setVisibility(View.VISIBLE);
                             }
                         }
@@ -366,12 +385,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
                                 flContainerBig.removeView(bigView);
-                                flContainerBig.addView(zhanweiView, 0);
+                                bigPlaceHolder.setVisibility(View.VISIBLE);
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
-                                flContainerBig.removeView(bigView);
-                                flContainerBig.addView(mPlayerView, 0);
+                                bigPlaceHolder.setVisibility(View.GONE);
+                                flContainerBig.addView(mPlayerView, 1);
                                 nameMask.setVisibility(View.INVISIBLE);
                             }
                         }
@@ -404,6 +423,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             launchStepDlg.dismiss();
         }
         launchSuccess();
+        videoLunchSuccess = true;
     }
 
     /**
@@ -413,13 +433,13 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         chatFragment = new PBChatFragment();
         chatFragment.setRoom(mRoom);
         bindVP(chatFragment, new PBChatPresenter(chatFragment));
-        addFragment(R.id.fl_pb_chat_content_container, chatFragment);
+        addFragment(R.id.fl_pb_chat_content_container, chatFragment, false, CHAT_FRAGMENT_TAG);
 
         pptFragment = new LPPPTFragment();
         pptFragment.setAnimPPTEnable(false);
         pptFragment.setLiveRoom(mRoom);
         pptFragment.setFlingEnable(false);
-        addFragment(R.id.fl_pb_container_big, pptFragment);
+        addFragment(R.id.fl_pb_container_big, pptFragment, false, PPT_FRAGMENT_TAG);
         if (mPlayerView != null) {
             changeZhanweiAndVideo();
             if (mPlayerView.isPlaying()) {
@@ -464,15 +484,23 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         doOnChatDrawerConfigurationChanged(newConfig);
         flContainerSmall.configurationChanged();
         isOrientation = !isOrientation;
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            chatFragment.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
-        } else {
-            chatFragment.setOrientation(Configuration.ORIENTATION_PORTRAIT);
+        if(videoLunchSuccess){
+            if(chatFragment == null){
+                chatFragment = (PBChatFragment) getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
+            }
+            if(pptFragment == null){
+                pptFragment = (LPPPTFragment) getSupportFragmentManager().findFragmentByTag(PPT_FRAGMENT_TAG);
+            }
+            if(chatFragment != null){
+                if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    chatFragment.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
+                } else {
+                    chatFragment.setOrientation(Configuration.ORIENTATION_PORTRAIT);
+                }
+            }
+//            mPlayerView.removeViewAt(2);
+//            mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
         }
-
-        mPlayerView.removeViewAt(2);
-        mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
-
     }
 
     /**
@@ -585,14 +613,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void switchPPTAndVideo() {
         isSmallView = !isSmallView;
-        View bigView = flContainerBig.getChildAt(0);
-        View smallView = flContainerSmall.getChildAt(0);
+        View bigView = flContainerBig.getChildAt(1);
+        View smallView = flContainerSmall.getChildAt(1);
         pptFragment.onStop();
 
         flContainerBig.removeView(bigView);
         flContainerSmall.removeView(smallView);
-        flContainerBig.addView(smallView, 0);
-        flContainerSmall.addView(bigView, 0);
+        flContainerBig.addView(smallView, 1);
+        flContainerSmall.addView(bigView, 1);
 
 
         pptFragment.onStart();
@@ -618,8 +646,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
 
         }
-        mPlayerView.removeViewAt(2);
-        mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
+        if(mPlayerView.getChildAt(2) != null){
+            mPlayerView.removeViewAt(2);
+        }
+        if(mPlayerView.getVideoItem() != null){
+            mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
+        }
     }
 
     //播放器回调
@@ -632,6 +664,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionContainer.setAdapter(definitionAdapter);
             mPlayerView.removeViewAt(2);
             mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
+            isVideoInfoInitialized = true;
+
+            nameMask.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -665,13 +700,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         @Override
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
             isFistPlay = true;
-            View zhanweiView = LayoutInflater.from(PBRoomActivity.this).inflate(R.layout.item_pb_zhanwei_image, null);
             if (isSmallView) {
-                flContainerSmall.removeViewAt(0);
-                flContainerSmall.addView(zhanweiView, 0);
+                flContainerSmall.removeViewAt(1);
+                smallPlaceHolder.setVisibility(View.VISIBLE);
             } else {
-                flContainerBig.removeViewAt(0);
-                flContainerBig.addView(zhanweiView, 0);
+                flContainerBig.removeViewAt(1);
+                bigPlaceHolder.setVisibility(View.VISIBLE);
             }
         }
 
@@ -683,10 +717,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void showChoseDefinitionDlg() {
-        definitionAdapter.setSelectPosition(selectPositon);
-        definitionRl.setVisibility(View.VISIBLE);
-        //definitionView.setVisibility(View.VISIBLE);
-        flContainerProgress.setVisibility(View.INVISIBLE);
+        if(isVideoInfoInitialized){
+            definitionAdapter.setSelectPosition(selectPositon);
+            definitionRl.setVisibility(View.VISIBLE);
+            //definitionView.setVisibility(View.VISIBLE);
+            flContainerProgress.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -698,10 +734,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void changeZhanweiAndVideo() {
         if (isFistPlay) {
-            View smallView = flContainerSmall.getChildAt(0);
-            flContainerSmall.removeView(smallView);
-            flContainerSmall.addView(mPlayerView, 0);
-            nameMask.setVisibility(View.VISIBLE);
+//            View smallView = flContainerSmall.getChildAt(0);
+//            flContainerSmall.removeView(smallView);
+            flContainerSmall.addView(mPlayerView, 1);
             isFistPlay = false;
         }
 

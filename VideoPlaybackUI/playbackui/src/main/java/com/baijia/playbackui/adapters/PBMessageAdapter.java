@@ -20,9 +20,12 @@ import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijia.player.playback.PBRoom;
 import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.models.imodels.IMessageModel;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wangkangfei on 17/8/17.
@@ -37,11 +40,17 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private PBRoom mRoom;
     private int emojiSize;
     private int orientationState;
+    private List<IMessageModel> messageModelList = new ArrayList<>();
 
     public PBMessageAdapter(Context context, PBRoom room) {
         this.context = context;
         this.mRoom = room;
         emojiSize = (int) (PBDisplayUtils.getScreenDensity(context) * 32);
+    }
+
+    public void setMessageModelList(List<IMessageModel> messageModelList) {
+        this.messageModelList.clear();
+        this.messageModelList.addAll(messageModelList);
     }
 
     public void setOrientation(int state) {
@@ -50,7 +59,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemViewType(int position) {
-        switch (mRoom.getChatVM().getMessage(position).getMessageType()) {
+        switch (messageModelList.get(position).getMessageType()) {
             case Text:
                 return MESSAGE_TYPE_TEXT;
             case Emoji:
@@ -82,7 +91,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        IMessageModel messageModel = mRoom.getChatVM().getMessage(position);
+        IMessageModel messageModel = messageModelList.get(position);
 
         int color;
         if (messageModel.getFrom().getType() == LPConstants.LPUserType.Teacher) {
@@ -112,11 +121,21 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 textViewHolder.textView.setTextColor(ContextCompat.getColor(context, R.color.pb_primary_text));
             }
         } else if (holder instanceof PBImageViewHolder) {
-            PBImageViewHolder imageViewHolder = (PBImageViewHolder) holder;
+            final PBImageViewHolder imageViewHolder = (PBImageViewHolder) holder;
             imageViewHolder.ivImg.setOnClickListener(null);
             imageViewHolder.tvName.setText(spanText);
             Picasso.with(context).load(messageModel.getUrl())
-                    .into(imageViewHolder.ivImg);
+                    .into(imageViewHolder.ivImg, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
+                        }
+                    });
             if (orientationState == Configuration.ORIENTATION_LANDSCAPE) {
                 imageViewHolder.chatImageGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_blue_bg);
             } else {
@@ -141,17 +160,17 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return mRoom.getChatVM().getMessageCount();
+        return messageModelList.size();
     }
 
     private static class PBTextViewHolder extends RecyclerView.ViewHolder {
         private TextView textView;
-        private LinearLayout chatBackGround;
+//        private LinearLayout chatBackGround;
 
         PBTextViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.pb_item_chat_text);
-            chatBackGround = (LinearLayout) itemView.findViewById(R.id.pb_item_chat_group);
+//            chatBackGround = (LinearLayout) itemView.findViewById(R.id.pb_item_chat_group);
         }
     }
 

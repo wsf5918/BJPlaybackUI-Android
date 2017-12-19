@@ -18,8 +18,8 @@ public class PBRoomUI {
     /**
      * 默认正式环境
      */
-    public static void enterPBRoom(Context context, String roomId, String roomToken, OnEnterPBRoomFailedListener onEnterPBRoomFailedListener) {
-        enterPBRoom(context, roomId, roomToken, LPConstants.LPDeployType.Product, onEnterPBRoomFailedListener);
+    public static void enterPBRoom(Context context, String roomId, String roomToken, String sessionId, OnEnterPBRoomFailedListener onEnterPBRoomFailedListener) {
+        enterPBRoom(context, roomId, roomToken, sessionId, LPConstants.LPDeployType.Product, onEnterPBRoomFailedListener);
     }
 
     /**
@@ -28,9 +28,10 @@ public class PBRoomUI {
      * @param context                     Activity
      * @param roomId                      房间id
      * @param roomToken                   token
+     * @param sessionId                   sessionId
      * @param onEnterPBRoomFailedListener 进房间错误监听，可为null
      */
-    public static void enterPBRoom(Context context, String roomId, String roomToken, LPConstants.LPDeployType deployType,
+    public static void enterPBRoom(Context context, String roomId, String roomToken, String sessionId, LPConstants.LPDeployType deployType,
                                    OnEnterPBRoomFailedListener onEnterPBRoomFailedListener) {
         if (!(context instanceof Activity)) {
             if (onEnterPBRoomFailedListener != null) {
@@ -62,6 +63,7 @@ public class PBRoomUI {
         Intent intent = new Intent(context, PBRoomActivity.class);
         intent.putExtra(ConstantUtil.PB_ROOM_ID, roomId);
         intent.putExtra(ConstantUtil.PB_ROOM_TOKEN, roomToken);
+        intent.putExtra(ConstantUtil.PB_ROOM_SESSION_ID, sessionId);
         intent.putExtra(ConstantUtil.PB_ROOM_DEPLOY, deployType.getType());
         context.startActivity(intent);
     }
