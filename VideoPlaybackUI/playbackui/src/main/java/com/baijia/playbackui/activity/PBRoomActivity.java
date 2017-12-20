@@ -38,7 +38,6 @@ import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
 import com.baijiahulian.common.networkv2.HttpException;
-import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.context.LPError;
 import com.baijiahulian.livecore.context.LiveRoom;
 import com.baijiahulian.livecore.launch.LPLaunchListener;
@@ -53,6 +52,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
+
+
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
@@ -314,7 +317,13 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
         sessionId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SESSION_ID);
         deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
+
+        // 不区分环境, github上的都是访问正式环境
+        //进入在线回放教室
         doEnterRoom();
+
+        //进入离线回放教室
+//        doEnterLocalRoom();
     }
 
     private void initLaunchStepDlg() {
@@ -342,20 +351,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         flContainerProgress.addView(view);
         //enter room action
-        switch (deployType) {
-            case 0:
-                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Test;
-                break;
-            case 1:
-                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Beta;
-                break;
-            case 2:
-                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
-                break;
-            default:
-                break;
-        }
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), Long.parseLong(sessionId), roomToken);
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
+//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), "", "");
+
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
         mRoom.enterRoom(this);
@@ -436,6 +434,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptFragment = new LPPPTFragment();
         pptFragment.setAnimPPTEnable(false);
         pptFragment.setLiveRoom(mRoom);
+        pptFragment.setAnimPPTEnable(false);
         pptFragment.setFlingEnable(false);
 
         if (mPlayerView != null) {
@@ -487,7 +486,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void doOnBigContainerConfigurationChanged(Configuration newConfig) {
         RelativeLayout.LayoutParams lpBigContainer = (RelativeLayout.LayoutParams) flContainerBig.getLayoutParams();
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
             lpBigContainer.width = ViewGroup.LayoutParams.MATCH_PARENT;
             lpBigContainer.height = ViewGroup.LayoutParams.MATCH_PARENT;
         } else {
@@ -502,7 +501,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void doOnSmallContainerConfigurationChanged(Configuration newConfig) {
         RelativeLayout.LayoutParams lpSmallContainer = new RelativeLayout.LayoutParams(PBDisplayUtils.dip2px(this, 150), PBDisplayUtils.dip2px(this, 90));
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
@@ -524,7 +523,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
      */
     private void doOnChatDrawerConfigurationChanged(Configuration newConfig) {
         RelativeLayout.LayoutParams lpChatDrawer = (RelativeLayout.LayoutParams) dlChat.getLayoutParams();
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
             dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -553,7 +552,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void onBackPressed() {
         // TODO: 17/8/18 横屏返回到竖屏，竖屏走点击关闭逻辑
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -739,7 +738,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public boolean changeOrientation() {
         if (isOrientation) {
-            mPlayerView.switchOrientation();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             rateView.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
             definitionContainer.setLayoutManager(manager);
@@ -751,6 +750,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionContainer.setLayoutManager(manager);
             definitionContainer.setAdapter(definitionAdapter);
         }
+
         return isOrientation;
     }
 
