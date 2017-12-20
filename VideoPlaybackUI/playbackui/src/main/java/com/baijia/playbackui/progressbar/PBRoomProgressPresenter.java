@@ -188,6 +188,10 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
         tvDefinition.setText(definition.substring(0, 2));
     }
 
+    public void setDefinitionVisible(boolean visible){
+        tvDefinition.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     public void forbidDefinitionChange() {
         tvDefinition.setEnabled(false);
     }

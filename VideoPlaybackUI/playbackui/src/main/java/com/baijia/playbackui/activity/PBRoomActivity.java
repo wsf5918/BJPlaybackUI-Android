@@ -393,6 +393,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                     }
                 });
         launchStepDlg.show();
+        if(mRoom.isPlayBackOffline()){
+            progressPresenter.setDefinitionVisible(false);
+        }
     }
 
     //进入房间的三个回调
