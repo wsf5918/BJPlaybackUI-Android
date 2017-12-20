@@ -431,8 +431,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (launchStepDlg != null) {
             launchStepDlg.dismiss();
         }
-        launchSuccess();
         videoLunchSuccess = true;
+        launchSuccess();
     }
 
     /**
@@ -742,7 +742,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void changeZhanweiAndVideo() {
-        if (isFistPlay) {
+        if (isFistPlay && videoLunchSuccess) {
             View smallView = flContainerSmall.getChildAt(1);
             flContainerSmall.removeView(smallView);
             flContainerSmall.addView(mPlayerView, 1);
