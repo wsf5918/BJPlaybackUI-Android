@@ -89,7 +89,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private boolean isFistPlay = true;//第一次清掉站位图;
     private List<VideoItem.DefinitionItem> definitionItems = new ArrayList<>();
     private DefinitionAdapter definitionAdapter;
-    private int selectPositon = 0;
+    private int selectPositon = -1;
 
     private boolean videoLunchSuccess = false;
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
@@ -667,9 +667,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             nameMask.setVisibility(View.VISIBLE);
 
             //默认设置最高清晰度
-            int position = definitionItems.size() > 0 ? definitionItems.size() -1 : 0;
-            VideoItem.DefinitionItem definitionItem = definitionItems.get(position);
-            selectDefinition(definitionItem.type, position);
+            if(selectPositon == -1){
+                int position = definitionItems.size() > 0 ? definitionItems.size() -1 : 0;
+                VideoItem.DefinitionItem definitionItem = definitionItems.get(position);
+                selectDefinition(definitionItem.type, position);
+            }
         }
 
         @Override
