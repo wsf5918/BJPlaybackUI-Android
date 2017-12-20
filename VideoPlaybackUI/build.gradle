@@ -17,8 +17,8 @@ allprojects {
     repositories {
         jcenter()
         //maven { url 'file:///Users/wangkangfei/project/maven/' }
-        maven { url 'http://live-cdn.baijiayun.com/android-sdk/' }
-//        maven { url 'https://raw.github.com/baijia/maven/master/' }
+//        maven { url 'http://live-cdn.baijiayun.com/android-sdk/' }
+        maven { url 'https://raw.github.com/baijia/maven/master/' }
         google()
     }
 }
