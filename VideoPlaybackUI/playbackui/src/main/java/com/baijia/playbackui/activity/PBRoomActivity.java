@@ -8,7 +8,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -38,6 +37,7 @@ import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
 import com.baijiahulian.common.networkv2.HttpException;
+import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.context.LPError;
 import com.baijiahulian.livecore.context.LiveRoom;
 import com.baijiahulian.livecore.launch.LPLaunchListener;
@@ -55,7 +55,6 @@ import rx.android.schedulers.AndroidSchedulers;
 
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
@@ -351,9 +350,20 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         flContainerProgress.addView(view);
         //enter room action
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), roomToken);
-//        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), "", "");
-
+        switch (deployType) {
+            case 0:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Test;
+                break;
+            case 1:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Beta;
+                break;
+            case 2:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
+                break;
+            default:
+                break;
+        }
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), Long.parseLong(sessionId), roomToken);
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
         mRoom.enterRoom(this);
@@ -655,6 +665,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             isVideoInfoInitialized = true;
 
             nameMask.setVisibility(View.VISIBLE);
+
+            //默认设置最高清晰度
+            int position = definitionItems.size() > 0 ? definitionItems.size() -1 : 0;
+            VideoItem.DefinitionItem definitionItem = definitionItems.get(position);
+            selectDefinition(definitionItem.type, position);
         }
 
         @Override
