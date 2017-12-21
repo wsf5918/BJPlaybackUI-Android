@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baijia.playbackui.R;
@@ -148,8 +149,8 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     imageViewHolder.tvExclamation.setVisibility(View.GONE);
                     return false;
                 }
-            })
-                    .fitCenter()
+            }).fitCenter()
+                    .override(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150))
                     .into(imageViewHolder.ivImg);
 
 //            Picasso.with(context).load(messageModel.getUrl())
@@ -185,7 +186,6 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             PBEmojiViewHolder emojiViewHolder = (PBEmojiViewHolder) holder;
             emojiViewHolder.tvName.setText(spanText);
             Picasso.with(context).load(messageModel.getUrl())
-                    .placeholder(R.drawable.pb_ic_exit)
                     .error(R.drawable.pb_ic_exit)
                     .resize(emojiSize, emojiSize)
                     .into(emojiViewHolder.ivEmoji);

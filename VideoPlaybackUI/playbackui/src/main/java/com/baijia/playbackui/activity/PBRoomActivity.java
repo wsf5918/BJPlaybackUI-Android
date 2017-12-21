@@ -55,6 +55,7 @@ import rx.android.schedulers.AndroidSchedulers;
 
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
     //view
@@ -447,8 +448,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptFragment = new LPPPTFragment();
         pptFragment.setAnimPPTEnable(false);
         pptFragment.setLiveRoom(mRoom);
-        pptFragment.setAnimPPTEnable(false);
         pptFragment.setFlingEnable(false);
+        pptFragment.changePPTTouchAble(isSmallView);
 
         if (mPlayerView != null) {
             changeZhanweiAndVideo();
@@ -476,7 +477,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         doOnSmallContainerConfigurationChanged(newConfig);
         doOnChatDrawerConfigurationChanged(newConfig);
         flContainerSmall.configurationChanged();
-        isOrientation = !isOrientation;
+        isOrientation = newConfig.orientation == ORIENTATION_PORTRAIT;
+        progressPresenter.onOrientationChanged(isOrientation);
         if(videoLunchSuccess){
             if(chatFragment == null){
                 chatFragment = (PBChatFragment) getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
@@ -488,7 +490,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     chatFragment.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
                 } else {
-                    chatFragment.setOrientation(Configuration.ORIENTATION_PORTRAIT);
+                    chatFragment.setOrientation(ORIENTATION_PORTRAIT);
                 }
             }
         }
@@ -621,8 +623,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         //交换ppt和视频的时候隐藏和显示nameMask
         if (isSmallView) {
+            pptFragment.changePPTTouchAble(true);
             nameMask.setVisibility(View.VISIBLE);
         } else {
+            pptFragment.changePPTTouchAble(false);
             nameMask.setVisibility(View.INVISIBLE);
         }
 
@@ -644,9 +648,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
 
         }
-        if(mPlayerView.getChildAt(2) != null){
-            mPlayerView.removeViewAt(2);
-        }
+//        if(mPlayerView.getChildAt(2) != null){
+//            mPlayerView.removeViewAt(2);
+//        }
+        mPlayerView.getCenterView().setVisibility(View.GONE);
         if(mPlayerView.getVideoItem() != null){
             mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
         }
@@ -660,12 +665,19 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionAdapter = new DefinitionAdapter(PBRoomActivity.this, definitionItems);
             definitionAdapter.setRouterListener(PBRoomActivity.this);
             definitionContainer.setAdapter(definitionAdapter);
-            mPlayerView.removeViewAt(2);
-            mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
+            //移除centerView
+//            if(mPlayerView.getChildAt(2) != null){
+//                mPlayerView.removeViewAt(2);
+//            }
+            mPlayerView.getCenterView().setVisibility(View.GONE);
+            if(mPlayerView.getVideoItem() != null){
+                mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
+            }
             isVideoInfoInitialized = true;
 
-            nameMask.setVisibility(View.VISIBLE);
-
+            if(isSmallView){
+                nameMask.setVisibility(View.VISIBLE);
+            }
             //默认设置最高清晰度
             if(selectPositon == -1){
                 int position = definitionItems.size() > 0 ? definitionItems.size() -1 : 0;
@@ -745,7 +757,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (isFistPlay && videoLunchSuccess) {
             View smallView = flContainerSmall.getChildAt(1);
             flContainerSmall.removeView(smallView);
-            flContainerSmall.addView(mPlayerView, 1);
+            if(mPlayerView.getParent() == null){
+                flContainerSmall.addView(mPlayerView, 1);
+            }
             if(flContainerBig.getChildAt(1) != null){
                 flContainerBig.removeViewAt(1);
             }
