@@ -328,7 +328,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     private void initLaunchStepDlg() {
         launchStepDlg = new MaterialDialog.Builder(this)
-                .title("正在加载...")
+                .content("正在加载...")
                 .progress(true, 100, false)
                 .cancelable(true)
                 .build();
@@ -451,6 +451,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptFragment.setFlingEnable(false);
         pptFragment.changePPTTouchAble(isSmallView);
 
+        addFragment(R.id.fl_pb_container_big, pptFragment, false, PPT_FRAGMENT_TAG);
+
         if (mPlayerView != null) {
             changeZhanweiAndVideo();
             if (mPlayerView.isPlaying()) {
@@ -469,6 +471,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         view.setPresenter(presenter);
     }
 
+    //FIXME 某些时候切换不响应
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -648,13 +651,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
 
         }
-//        if(mPlayerView.getChildAt(2) != null){
-//            mPlayerView.removeViewAt(2);
-//        }
-        mPlayerView.getCenterView().setVisibility(View.GONE);
-        if(mPlayerView.getVideoItem() != null){
-            mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
-        }
+        updateWaterMark();
     }
 
     //播放器回调
@@ -665,14 +662,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionAdapter = new DefinitionAdapter(PBRoomActivity.this, definitionItems);
             definitionAdapter.setRouterListener(PBRoomActivity.this);
             definitionContainer.setAdapter(definitionAdapter);
-            //移除centerView
-//            if(mPlayerView.getChildAt(2) != null){
-//                mPlayerView.removeViewAt(2);
-//            }
+            //隐藏loading
             mPlayerView.getCenterView().setVisibility(View.GONE);
-            if(mPlayerView.getVideoItem() != null){
-                mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
-            }
+
+            updateWaterMark();
             isVideoInfoInitialized = true;
 
             if(isSmallView){
@@ -718,14 +711,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
             isFistPlay = true;
             if (isSmallView) {
-                if(flContainerSmall.getChildAt(1) != null){
-                    flContainerSmall.removeViewAt(1);
-                }
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             } else {
-                if(flContainerBig.getChildAt(1) != null){
-                    flContainerBig.removeViewAt(1);
-                }
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
         }
@@ -755,16 +742,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void changeZhanweiAndVideo() {
         if (isFistPlay && videoLunchSuccess) {
-            View smallView = flContainerSmall.getChildAt(1);
-            flContainerSmall.removeView(smallView);
-            if(mPlayerView.getParent() == null){
-                flContainerSmall.addView(mPlayerView, 1);
-            }
-            if(flContainerBig.getChildAt(1) != null){
-                flContainerBig.removeViewAt(1);
-            }
-            removeFragment(pptFragment);
-            addFragment(R.id.fl_pb_container_big, pptFragment, false, PPT_FRAGMENT_TAG);
             isFistPlay = false;
         }
     }
@@ -818,5 +795,17 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         }
         flContainerProgress.setVisibility(View.VISIBLE);
         definitionRl.setVisibility(View.GONE);
+    }
+
+    private void updateWaterMark(){
+        //移除水印
+        View waterMark = mPlayerView.findViewById(R.id.water_mark_iv_id);
+        if(waterMark != null){
+            mPlayerView.removeView(waterMark);
+        }
+        //重新添加
+        if(mPlayerView.getVideoItem() != null){
+            mPlayerView.showWaterMark(mPlayerView.getVideoItem().waterMark);
+        }
     }
 }
