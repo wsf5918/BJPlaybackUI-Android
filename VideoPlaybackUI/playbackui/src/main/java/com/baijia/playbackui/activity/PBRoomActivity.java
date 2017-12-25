@@ -3,6 +3,7 @@ package com.baijia.playbackui.activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +49,7 @@ import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.BJCenterViewPresenter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -671,9 +673,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             if(isSmallView){
                 nameMask.setVisibility(View.VISIBLE);
             }
-            //默认设置最高清晰度
-            if(selectPositon == -1){
-                int position = definitionItems.size() > 0 ? definitionItems.size() -1 : 0;
+            //默认设置最高清晰度(只针对在线视频)
+            if(!mRoom.isPlayBackOffline() && selectPositon == -1 && definitionItems != null && definitionItems.size() > 0){
+                int position = definitionItems.size() - 1;
                 VideoItem.DefinitionItem definitionItem = definitionItems.get(position);
                 selectDefinition(definitionItem.type, position);
             }
