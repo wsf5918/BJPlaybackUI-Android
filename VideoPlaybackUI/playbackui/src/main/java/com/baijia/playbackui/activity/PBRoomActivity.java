@@ -473,7 +473,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         view.setPresenter(presenter);
     }
 
-    //FIXME 某些时候切换不响应
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

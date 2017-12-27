@@ -103,37 +103,4 @@ public class DragTextView extends FrameLayout {
         }
         return super.onTouchEvent(event);
     }
-
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent(ev);
-    }
-
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                lastX = (int) event.getRawX();
-                lastY = (int) event.getRawY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                dx = (int) event.getRawX() - lastX;
-                dy = (int) event.getRawY() - lastY;
-
-                lastX = (int) event.getRawX();
-                lastY = (int) event.getRawY();
-                //Log.e("onGlobal", getLeft() + ":" + getTop() + ":" + getRight() + ":" + getBottom());
-                threshold = Math.max(threshold, Math.abs(dx) + Math.abs(dy));
-                break;
-            case MotionEvent.ACTION_UP:
-                if (threshold > 10) {
-                    threshold = 0;
-                    Log.d("yjm", "DragTextView onInterceptTouchEvent invoke");
-                    return true;
-                }
-        }
-        return super.onInterceptTouchEvent(event);
-    }
 }
