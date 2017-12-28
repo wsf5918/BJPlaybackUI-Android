@@ -170,12 +170,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         doOnChatDrawerConfigurationChanged(configuration);
     }
 
-    private void setSurfaceZOrderMediaOverlayTrue(View view) {
+    private void setSurfaceZOrderMediaOverlay(View view, boolean isZOrder) {
         if (view instanceof SurfaceView) {
-            ((SurfaceView) view).setZOrderMediaOverlay(true);
+            ((SurfaceView) view).setZOrderMediaOverlay(isZOrder);
         } else if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                setSurfaceZOrderMediaOverlayTrue(((ViewGroup) view).getChildAt(i));
+                setSurfaceZOrderMediaOverlay(((ViewGroup) view).getChildAt(i), isZOrder);
             }
         }
     }
@@ -193,10 +193,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 flContainerSmall.setVisibility(View.VISIBLE);
                 if (isSmallView) {
                     flContainerSmall.addView(mPlayerView, 1);
-                    setSurfaceZOrderMediaOverlayTrue(mPlayerView);
+                    setSurfaceZOrderMediaOverlay(mPlayerView, true);
                 } else {
                     pptFragment.onStart();
-                    setSurfaceZOrderMediaOverlayTrue(pptFragment.getView());
+                    setSurfaceZOrderMediaOverlay(pptFragment.getView(), true);
                 }
                 flAreaSwitch.setVisibility(View.GONE);
             }
@@ -634,24 +634,13 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             nameMask.setVisibility(View.INVISIBLE);
         }
 
-        View surface;
         if (bigView instanceof BJPlayerView) {
-            surface = ((BJPlayerView) bigView).getVideoView().getChildAt(0);
-            if(surface != null){
-                ((SurfaceView) surface).setZOrderMediaOverlay(true);
-            }
-            ((SurfaceView) ((FrameLayout) ((RelativeLayout) smallView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(false);
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_stopvideo);
-        }
-        if (!(bigView instanceof BJPlayerView) && !(smallView instanceof LinearLayout) && !(bigView instanceof LinearLayout)) {
-            surface = ((BJPlayerView) smallView).getVideoView().getChildAt(0);
-            if(surface != null){
-                ((SurfaceView) surface).setZOrderMediaOverlay(false);
-            }
-            ((SurfaceView) ((FrameLayout) ((RelativeLayout) bigView).getChildAt(0)).getChildAt(0)).setZOrderMediaOverlay(true);
+        } else{
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_ppt);
-
         }
+        setSurfaceZOrderMediaOverlay(bigView, true);
+        setSurfaceZOrderMediaOverlay(smallView, false);
         updateWaterMark();
     }
 
