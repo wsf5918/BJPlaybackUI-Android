@@ -2,6 +2,7 @@ package com.baijia.playbackui.activity;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
@@ -160,7 +161,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
         });
         initSmallLayoutParams();
-
+        //修复某些机器上surfaceView导致的闪黑屏的bug
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
     }
 
     private void initSmallLayoutParams() {
@@ -375,31 +377,25 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-//                        View bigView = flContainerBig.getChildAt(1);
-//                        View smallView = flContainerSmall.getChildAt(1);
                         if (isSmallView && !isFistPlay) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-//                                flContainerSmall.removeView(smallView);
                                 smallPlaceHolder.setVisibility(View.VISIBLE);
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
                                 smallPlaceHolder.setVisibility(View.GONE);
-//                                flContainerSmall.addView(mPlayerView, 1);
                                 nameMask.setVisibility(View.VISIBLE);
                             }
                         }
                         if (!isSmallView && !isFistPlay) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-//                                flContainerBig.removeView(bigView);
                                 bigPlaceHolder.setVisibility(View.VISIBLE);
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
                                 bigPlaceHolder.setVisibility(View.GONE);
-//                                flContainerBig.addView(mPlayerView, 1);
                                 nameMask.setVisibility(View.INVISIBLE);
                             }
                         }
