@@ -85,7 +85,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     //data
     private PBRoom mRoom;
-    private String roomId, roomToken, sessionId;
+    private String roomId, roomToken, sessionId, videoFilePath, signalFilePath;
     private int deployType;
     private boolean isSmallView = true;//用来判断当前视频view是否在smallView上
     private boolean isOrientation = true;//用来判断当前是横屏还是竖屏(初始话为竖屏)
@@ -315,17 +315,24 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     }
 
     private void initData() {
-        roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
-        roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
-        sessionId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SESSION_ID);
-        deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
+        if(getIntent().getStringExtra(ConstantUtil.PB_ROOM_SESSION_ID) == null){
+            roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
+            videoFilePath = getIntent().getStringExtra(ConstantUtil.PB_ROOM_VIDEOFILE_PATH);
+            signalFilePath = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SIGNALFILE_PATH);
+            deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
 
-        // 不区分环境, github上的都是访问正式环境
-        //进入在线回放教室
-        doEnterRoom();
+            //进入离线回放教室
+            doEnterLocalRoom();
 
-        //进入离线回放教室
-//        doEnterLocalRoom();
+        }else {
+            roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
+            roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
+            sessionId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SESSION_ID);
+            deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
+
+            //进入在线回放教室
+            doEnterRoom();
+        }
     }
 
     private void initLaunchStepDlg() {
@@ -336,6 +343,82 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .build();
     }
 
+    private void doEnterLocalRoom(){
+        View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
+        progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
+        progressPresenter.setRouterListener(this);
+
+        mPlayerView.setTopPresenter(progressPresenter);
+        mPlayerView.setBottomPresenter(progressPresenter);
+        BJCenterViewPresenter bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
+        bjCenterViewPresenter.setRightMenuHidden(true);
+        mPlayerView.setCenterPresenter(bjCenterViewPresenter);
+        mPlayerView.enableBrightnessGesture(false);
+        mPlayerView.enableSeekGesture(false);
+        mPlayerView.enableVolumeGesture(false);
+//        mPlayerView.setForbidConfiguration(true);
+
+        flContainerProgress.addView(view);
+        //enter room action
+        switch (deployType) {
+            case 0:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Test;
+                break;
+            case 1:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Beta;
+                break;
+            case 2:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
+                break;
+            default:
+                break;
+        }
+
+
+        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), videoFilePath, signalFilePath);
+        mRoom.bindPlayerView(mPlayerView);
+        mRoom.setOnPlayerListener(onPlayerListener);
+        mRoom.enterRoom(this);
+        mRoom.getObservableOfVideoStatus()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new LPErrorPrintSubscriber<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+//                        View bigView = flContainerBig.getChildAt(1);
+//                        View smallView = flContainerSmall.getChildAt(1);
+                        if (isSmallView && !isFistPlay) {
+                            if (!aBoolean) {
+                                progressPresenter.forbidDefinitionChange();
+//                                flContainerSmall.removeView(smallView);
+                                smallPlaceHolder.setVisibility(View.VISIBLE);
+                                nameMask.setVisibility(View.INVISIBLE);
+                            } else {
+                                progressPresenter.openDefinitionChange();
+                                smallPlaceHolder.setVisibility(View.GONE);
+//                                flContainerSmall.addView(mPlayerView, 1);
+                                nameMask.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        if (!isSmallView && !isFistPlay) {
+                            if (!aBoolean) {
+                                progressPresenter.forbidDefinitionChange();
+//                                flContainerBig.removeView(bigView);
+                                bigPlaceHolder.setVisibility(View.VISIBLE);
+                                nameMask.setVisibility(View.INVISIBLE);
+                            } else {
+                                progressPresenter.openDefinitionChange();
+                                bigPlaceHolder.setVisibility(View.GONE);
+//                                flContainerBig.addView(mPlayerView, 1);
+                                nameMask.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    }
+                });
+        launchStepDlg.show();
+        if(mRoom.isPlayBackOffline()){
+            progressPresenter.setDefinitionVisible(false);
+        }
+    }
     private void doEnterRoom() {
         View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
         progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
@@ -366,6 +449,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             default:
                 break;
         }
+
+
         mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), Long.parseLong(sessionId), roomToken);
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);

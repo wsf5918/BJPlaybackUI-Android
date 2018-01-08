@@ -68,6 +68,37 @@ public class PBRoomUI {
         context.startActivity(intent);
     }
 
+    public static void enterLocalPBRoom(Context context, String roomId, String videoPath, String signalPath, LPConstants.LPDeployType deployType,
+                                   OnEnterPBRoomFailedListener onEnterPBRoomFailedListener) {
+        if (!(context instanceof Activity)) {
+            if (onEnterPBRoomFailedListener != null) {
+                onEnterPBRoomFailedListener.onEnterPBRoomFailed("Please pass the context of an activity");
+            }
+            return;
+        }
+        try {
+            if (Long.valueOf(roomId) <= 0) {
+                if (onEnterPBRoomFailedListener != null) {
+                    onEnterPBRoomFailedListener.onEnterPBRoomFailed("invalid room id");
+                }
+                return;
+            }
+        } catch (Exception e) {
+            if (onEnterPBRoomFailedListener != null) {
+                onEnterPBRoomFailedListener.onEnterPBRoomFailed("invalid room id");
+            }
+            return;
+        }
+
+
+        Intent intent = new Intent(context, PBRoomActivity.class);
+        intent.putExtra(ConstantUtil.PB_ROOM_ID, roomId);
+        intent.putExtra(ConstantUtil.PB_ROOM_VIDEOFILE_PATH, videoPath);
+        intent.putExtra(ConstantUtil.PB_ROOM_SIGNALFILE_PATH, signalPath);
+        intent.putExtra(ConstantUtil.PB_ROOM_DEPLOY, deployType.getType());
+        context.startActivity(intent);
+    }
+
     public interface OnEnterPBRoomFailedListener {
         void onEnterPBRoomFailed(String msg);
     }
