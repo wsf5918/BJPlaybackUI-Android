@@ -1,11 +1,16 @@
 package com.baijia.playbackui.viewsupport;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -43,15 +48,23 @@ public class DragTextView extends FrameLayout {
         wm.getDefaultDisplay().getMetrics(metric);
         screenWidth = metric.widthPixels;
         screenHeight = metric.heightPixels;
+
+        int statusBarHeight = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+        }
+        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            screenHeight -= statusBarHeight;
+        }
     }
 
     public void configurationChanged() {
-        DisplayMetrics metric = new DisplayMetrics();
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(metric);
-        screenWidth = metric.widthPixels;
-        screenHeight = metric.heightPixels;
+        initScreenParam(context);
     }
+
+
 
     private int threshold = 0;
 
@@ -102,38 +115,5 @@ public class DragTextView extends FrameLayout {
                 }
         }
         return super.onTouchEvent(event);
-    }
-
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        return super.dispatchTouchEvent(ev);
-    }
-
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                lastX = (int) event.getRawX();
-                lastY = (int) event.getRawY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                dx = (int) event.getRawX() - lastX;
-                dy = (int) event.getRawY() - lastY;
-
-                lastX = (int) event.getRawX();
-                lastY = (int) event.getRawY();
-                //Log.e("onGlobal", getLeft() + ":" + getTop() + ":" + getRight() + ":" + getBottom());
-                threshold = Math.max(threshold, Math.abs(dx) + Math.abs(dy));
-                break;
-            case MotionEvent.ACTION_UP:
-                if (threshold > 10) {
-                    threshold = 0;
-                    Log.d("yjm", "DragTextView onInterceptTouchEvent invoke");
-                    return true;
-                }
-        }
-        return super.onInterceptTouchEvent(event);
     }
 }
