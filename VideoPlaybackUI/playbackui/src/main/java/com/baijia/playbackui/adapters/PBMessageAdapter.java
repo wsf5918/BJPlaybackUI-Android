@@ -3,11 +3,6 @@ package com.baijia.playbackui.adapters;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
-import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -19,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baijia.playbackui.R;
@@ -27,18 +21,10 @@ import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijia.player.playback.PBRoom;
 import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.models.imodels.IMessageModel;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,20 +128,38 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             final PBImageViewHolder imageViewHolder = (PBImageViewHolder) holder;
             imageViewHolder.ivImg.setOnClickListener(null);
             imageViewHolder.tvName.setText(spanText);
-            Glide.with(context).load(messageModel.getUrl()).apply(options)
-                    .listener(new RequestListener<Drawable>() {
+//            RequestOptions options = new RequestOptions()
+//                    .fitCenter()
+//                    .override(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150));
+//            Glide.with(context).load(messageModel.getUrl()).listener(new RequestListener<Drawable>() {
+//                @Override
+//                public boolean onLoadFailed(@Nullable GlideException e, Object o, Target<Drawable> target, boolean b) {
+//                    imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
+//                    return false;
+//                }
+//
+//                @Override
+//                public boolean onResourceReady(Drawable drawable, Object o, Target<Drawable> target, DataSource dataSource, boolean b) {
+//                    imageViewHolder.tvExclamation.setVisibility(View.GONE);
+//                    return false;
+//                }
+//            }).apply(options).into(imageViewHolder.ivImg);
+
+            Picasso.with(context).load(messageModel.getUrl())
+                    .fit()
+                    .resize(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150))
+                    .into(imageViewHolder.ivImg, new Callback() {
                         @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
-                            return false;
+                        public void onSuccess() {
+                            imageViewHolder.tvExclamation.setVisibility(View.GONE);
                         }
 
                         @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            imageViewHolder.tvExclamation.setVisibility(View.GONE);
-                            return false;
+                        public void onError() {
+                            imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
                         }
-                    }).into(imageViewHolder.ivImg);
+                    });
+
             if (orientationState == Configuration.ORIENTATION_LANDSCAPE) {
                 imageViewHolder.chatImageGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_blue_bg);
             } else {

@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -90,7 +91,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private int deployType;
     private boolean isSmallView = true;//用来判断当前视频view是否在smallView上
     private boolean isOrientation = true;//用来判断当前是横屏还是竖屏(初始话为竖屏)
-    private boolean isFistPlay = true;//第一次清掉站位图;
     private List<VideoItem.DefinitionItem> definitionItems = new ArrayList<>();
     private DefinitionAdapter definitionAdapter;
     private int selectPositon = -1;
@@ -103,6 +103,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private ImageView smallPlaceHolder;
     private ImageView bigPlaceHolder;
 
+    //是否需要重置SAEngine信令解析到初始位置
+    private boolean isSAEngineNeedReset = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,7 +221,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerSmall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!videoLunchSuccess || isFistPlay){
+                if(!videoLunchSuccess){
                     return;
                 }
                 List<String> options = new ArrayList<>();
@@ -304,6 +306,13 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 rateView.setVisibility(View.GONE);
                 mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_2_X);
                 setRate(rateHigh.getText().toString());
+            }
+        });
+
+        flContainerBig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
             }
         });
     }
@@ -431,9 +440,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         BJCenterViewPresenter bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
         bjCenterViewPresenter.setRightMenuHidden(true);
         mPlayerView.setCenterPresenter(bjCenterViewPresenter);
-        mPlayerView.enableBrightnessGesture(false);
-        mPlayerView.enableSeekGesture(false);
-        mPlayerView.enableVolumeGesture(false);
+        mPlayerView.setGestureEnable(false);
 //        mPlayerView.setForbidConfiguration(true);
 
         flContainerProgress.addView(view);
@@ -462,7 +469,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-                        if (isSmallView && !isFistPlay) {
+                        Log.d("yjm", "getObservableOfVideoStatus " + aBoolean);
+                        if (isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
                                 smallPlaceHolder.setVisibility(View.VISIBLE);
@@ -473,7 +481,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                                 nameMask.setVisibility(View.VISIBLE);
                             }
                         }
-                        if (!isSmallView && !isFistPlay) {
+                        if (!isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
                                 bigPlaceHolder.setVisibility(View.VISIBLE);
@@ -537,7 +545,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         addFragment(R.id.fl_pb_container_big, pptFragment, false, PPT_FRAGMENT_TAG);
 
         if (mPlayerView != null) {
-            changeZhanweiAndVideo();
             if (mPlayerView.isPlaying()) {
                 mPlayerView.pauseVideo();
             } else {
@@ -725,6 +732,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         updateWaterMark();
     }
 
+
     //播放器回调
     private OnPlayerListener onPlayerListener = new OnPlayerListener() {
         @Override
@@ -780,7 +788,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
-            isFistPlay = true;
+            isSAEngineNeedReset = true;
             if (isSmallView) {
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             } else {
@@ -791,6 +799,20 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         @Override
         public void onVideoPrepared(BJPlayerView playerView) {
 
+        }
+
+        @Override
+        public void onPause(BJPlayerView playerView) {
+            isSAEngineNeedReset = false;
+        }
+
+        @Override
+        public void onPlay(BJPlayerView playerView) {
+            changeZhanweiAndVideo();
+            //重新开始播放，SAEngine seekTo(1)
+            if(isSAEngineNeedReset){
+                mRoom.seekTo(1);
+            }
         }
     };
 
@@ -812,9 +834,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void changeZhanweiAndVideo() {
-        if (isFistPlay && videoLunchSuccess) {
-            isFistPlay = false;
-        }
+
     }
 
     @Override

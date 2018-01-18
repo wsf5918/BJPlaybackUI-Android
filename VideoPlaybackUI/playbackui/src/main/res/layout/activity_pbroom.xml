@@ -193,14 +193,6 @@
         android:layout_height="90dp"
         android:clickable="true">
 
-        <ImageView
-            android:id="@+id/pb_player_small_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_video_back_zhanwei"
-            />
-
         <com.baijiahulian.player.BJPlayerView
             android:id="@+id/pb_pv_main"
             android:layout_width="match_parent"
@@ -209,6 +201,14 @@
             app:bottom_controller="@layout/pb_player_view_null"
             app:top_controller="@layout/pb_player_view_null"/>
 
+
+        <ImageView
+            android:id="@+id/pb_player_small_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_video_back_zhanwei"
+            />
 
         <RelativeLayout
             android:id="@+id/rl_pb_name_mask"
