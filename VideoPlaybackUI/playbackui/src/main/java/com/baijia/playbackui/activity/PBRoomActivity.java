@@ -395,31 +395,25 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-//                        View bigView = flContainerBig.getChildAt(1);
-//                        View smallView = flContainerSmall.getChildAt(1);
-                        if (isSmallView && !isFistPlay) {
+                        if (isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-//                                flContainerSmall.removeView(smallView);
                                 smallPlaceHolder.setVisibility(View.VISIBLE);
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
                                 smallPlaceHolder.setVisibility(View.GONE);
-//                                flContainerSmall.addView(mPlayerView, 1);
                                 nameMask.setVisibility(View.VISIBLE);
                             }
                         }
-                        if (!isSmallView && !isFistPlay) {
+                        if (!isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-//                                flContainerBig.removeView(bigView);
                                 bigPlaceHolder.setVisibility(View.VISIBLE);
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
                                 bigPlaceHolder.setVisibility(View.GONE);
-//                                flContainerBig.addView(mPlayerView, 1);
                                 nameMask.setVisibility(View.INVISIBLE);
                             }
                         }
@@ -808,7 +802,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onPlay(BJPlayerView playerView) {
-            changeZhanweiAndVideo();
             //重新开始播放，SAEngine seekTo(1)
             if(isSAEngineNeedReset){
                 mRoom.seekTo(1);

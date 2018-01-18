@@ -42,14 +42,11 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private int emojiSize;
     private int orientationState;
     private List<IMessageModel> messageModelList = new ArrayList<>();
-    private RequestOptions options;
 
     public PBMessageAdapter(Context context, PBRoom room) {
         this.context = context;
         this.mRoom = room;
         emojiSize = (int) (PBDisplayUtils.getScreenDensity(context) * 32);
-        options = new RequestOptions().fitCenter()
-                .override(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150));
     }
 
     public void setMessageModelList(List<IMessageModel> messageModelList) {
