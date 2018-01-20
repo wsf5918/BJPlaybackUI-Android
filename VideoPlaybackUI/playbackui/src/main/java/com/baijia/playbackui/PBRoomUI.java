@@ -28,7 +28,8 @@ public class PBRoomUI {
      * @param context                     Activity
      * @param roomId                      房间id
      * @param roomToken                   token
-     * @param sessionId                   sessionId
+     * @param sessionId                   sessionId 长期课才需要填，非长期课默认传-1
+     * @param deployType                  服务器环境(默认正式服，客户集成时可以不传此参数)
      * @param onEnterPBRoomFailedListener 进房间错误监听，可为null
      */
     public static void enterPBRoom(Context context, String roomId, String roomToken, String sessionId, LPConstants.LPDeployType deployType,

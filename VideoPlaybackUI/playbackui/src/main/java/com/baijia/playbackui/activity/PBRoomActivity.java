@@ -79,8 +79,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private TextView rateMiddle;
     private TextView rateHigh;
     private TextView markNameTv;
-
-
     //fragment
     private PBChatFragment chatFragment;
     private LPPPTFragment pptFragment;
@@ -102,9 +100,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     private ImageView smallPlaceHolder;
     private ImageView bigPlaceHolder;
-
-    //是否需要重置SAEngine信令解析到初始位置
-    private boolean isSAEngineNeedReset = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -333,7 +328,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
 
             //进入离线回放教室
-            doEnterLocalRoom();
+            doEnterRoom(true);
 
         }else {
             roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
@@ -342,7 +337,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
 
             //进入在线回放教室
-            doEnterRoom();
+            doEnterRoom(false);
         }
     }
 
@@ -354,77 +349,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .build();
     }
 
-    private void doEnterLocalRoom(){
-        View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
-        progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
-        progressPresenter.setRouterListener(this);
-
-        mPlayerView.setTopPresenter(progressPresenter);
-        mPlayerView.setBottomPresenter(progressPresenter);
-        BJCenterViewPresenter bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
-        bjCenterViewPresenter.setRightMenuHidden(true);
-        mPlayerView.setCenterPresenter(bjCenterViewPresenter);
-        mPlayerView.enableBrightnessGesture(false);
-        mPlayerView.enableSeekGesture(false);
-        mPlayerView.enableVolumeGesture(false);
-//        mPlayerView.setForbidConfiguration(true);
-
-        flContainerProgress.addView(view);
-        //enter room action
-        switch (deployType) {
-            case 0:
-                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Test;
-                break;
-            case 1:
-                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Beta;
-                break;
-            case 2:
-                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
-                break;
-            default:
-                break;
-        }
-
-
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), videoFilePath, signalFilePath);
-        mRoom.bindPlayerView(mPlayerView);
-        mRoom.setOnPlayerListener(onPlayerListener);
-        mRoom.enterRoom(this);
-        mRoom.getObservableOfVideoStatus()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new LPErrorPrintSubscriber<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if (isSmallView) {
-                            if (!aBoolean) {
-                                progressPresenter.forbidDefinitionChange();
-                                smallPlaceHolder.setVisibility(View.VISIBLE);
-                                nameMask.setVisibility(View.INVISIBLE);
-                            } else {
-                                progressPresenter.openDefinitionChange();
-                                smallPlaceHolder.setVisibility(View.GONE);
-                                nameMask.setVisibility(View.VISIBLE);
-                            }
-                        }
-                        if (!isSmallView) {
-                            if (!aBoolean) {
-                                progressPresenter.forbidDefinitionChange();
-                                bigPlaceHolder.setVisibility(View.VISIBLE);
-                                nameMask.setVisibility(View.INVISIBLE);
-                            } else {
-                                progressPresenter.openDefinitionChange();
-                                bigPlaceHolder.setVisibility(View.GONE);
-                                nameMask.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    }
-                });
-        launchStepDlg.show();
-        if(mRoom.isPlayBackOffline()){
-            progressPresenter.setDefinitionVisible(false);
-        }
-    }
-    private void doEnterRoom() {
+    /**
+     * 进入房间
+     * @param isOfflineRoom 是否是离线播放  false:在线播放  true:本地播放
+     */
+    private void doEnterRoom(boolean isOfflineRoom) {
         View view = LayoutInflater.from(this).inflate(R.layout.pb_player_controller_view, null, false);
         progressPresenter = new PBRoomProgressPresenter(view, mPlayerView);
         progressPresenter.setRouterListener(this);
@@ -453,8 +382,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 break;
         }
 
-
-        mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), Long.parseLong(sessionId), roomToken);
+        if(isOfflineRoom){
+            mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), videoFilePath, signalFilePath);
+        } else{
+            mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), Long.parseLong(sessionId), roomToken);
+        }
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
         mRoom.enterRoom(this);
@@ -463,7 +395,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
-                        Log.d("yjm", "getObservableOfVideoStatus " + aBoolean);
                         if (isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
@@ -774,15 +705,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onVideoDefinition(BJPlayerView playerView, int definition) {
-//            if (!isSmallView) {
-//                flContainerSmall.removeViewAt(0);
-//                flContainerSmall.addView(playerView, 0);
-//            }
         }
 
         @Override
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
-            isSAEngineNeedReset = true;
             if (isSmallView) {
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             } else {
@@ -797,15 +723,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onPause(BJPlayerView playerView) {
-            isSAEngineNeedReset = false;
         }
 
         @Override
         public void onPlay(BJPlayerView playerView) {
-            //重新开始播放，SAEngine seekTo(1)
-            if(isSAEngineNeedReset){
-                mRoom.seekTo(1);
-            }
+
         }
     };
 
