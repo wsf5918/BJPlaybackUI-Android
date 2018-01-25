@@ -143,7 +143,6 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 //            }).apply(options).into(imageViewHolder.ivImg);
 
             Picasso.with(context).load(messageModel.getUrl())
-                    .fit()
                     .resize(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150))
                     .into(imageViewHolder.ivImg, new Callback() {
                         @Override

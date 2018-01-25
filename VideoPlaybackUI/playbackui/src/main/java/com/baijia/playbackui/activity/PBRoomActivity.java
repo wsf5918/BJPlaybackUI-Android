@@ -423,6 +423,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if(mRoom.isPlayBackOffline()){
             progressPresenter.setDefinitionVisible(false);
         }
+        addFragment();
     }
 
     //进入房间的三个回调
@@ -452,10 +453,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         launchSuccess();
     }
 
-    /**
-     * 进入房间成功
-     */
-    private void launchSuccess() {
+
+    private void addFragment(){
         chatFragment = new PBChatFragment();
         chatFragment.setRoom(mRoom);
         bindVP(chatFragment, new PBChatPresenter(chatFragment));
@@ -468,14 +467,17 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptFragment.changePPTTouchAble(isSmallView);
 
         addFragment(R.id.fl_pb_container_big, pptFragment, false, PPT_FRAGMENT_TAG);
-
+    }
+    /**
+     * 进入房间成功
+     */
+    private void launchSuccess() {
         if (mPlayerView != null) {
             if (mPlayerView.isPlaying()) {
                 mPlayerView.pauseVideo();
             } else {
                 mPlayerView.playVideo();
             }
-
         }
         markNameTv.setText(mRoom.getTeacherUser().getName());
 
