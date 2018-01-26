@@ -50,6 +50,7 @@ import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.BJCenterViewPresenter;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -133,6 +134,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         definitionContainer.setLayoutManager(linearLayoutManager);
 
+        Picasso.with(this)
+                .load(ConstantUtil.AUDIO_ON_PICTURE)
+                .fit()
+                .error(R.drawable.ic_video_back_zhanwei)
+                .into(smallPlaceHolder);
 
         dlChat.openDrawer(Gravity.START);
         dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
