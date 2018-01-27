@@ -395,7 +395,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         }
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
-        mRoom.enterRoom(this);
         mRoom.getObservableOfVideoStatus()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
@@ -430,6 +429,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             progressPresenter.setDefinitionVisible(false);
         }
         addFragment();
+        mRoom.enterRoom(this);
     }
 
     //进入房间的三个回调
@@ -486,7 +486,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
         }
         markNameTv.setText(mRoom.getTeacherUser().getName());
-
     }
 
     private <V extends PBBaseView, P extends PBBasePresenter> void bindVP(V view, P presenter) {
@@ -633,7 +632,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private void switchPPTAndVideo() {
         isSmallView = !isSmallView;
         View bigView = flContainerBig.getChildAt(1);
-        View smallView = flContainerSmall.getChildAt(1);
+        View smallView = flContainerSmall.getChildAt(0);
         if(bigView == null || smallView == null){
             return;
         }
@@ -642,7 +641,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerBig.removeView(bigView);
         flContainerSmall.removeView(smallView);
         flContainerBig.addView(smallView, 1);
-        flContainerSmall.addView(bigView, 1);
+        flContainerSmall.addView(bigView, 0);
 
         pptFragment.onStart();
 
@@ -718,6 +717,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         @Override
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
             if (isSmallView) {
+                nameMask.setVisibility(View.GONE);
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             } else {
                 bigPlaceHolder.setVisibility(View.VISIBLE);
