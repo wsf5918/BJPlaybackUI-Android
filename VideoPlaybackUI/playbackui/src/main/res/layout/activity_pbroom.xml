@@ -21,13 +21,17 @@
         android:layout_width="match_parent"
         android:layout_height="240dp">
 
+        <FrameLayout
+            android:id="@+id/ppt_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:id="@+id/pb_player_big_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@color/lp_ppt_white"
+            android:visibility="gone"
             />
 
     </FrameLayout>
