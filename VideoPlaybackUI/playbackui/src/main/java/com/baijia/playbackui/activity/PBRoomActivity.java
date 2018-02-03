@@ -1,17 +1,14 @@
 package com.baijia.playbackui.activity;
 
-import android.app.Fragment;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -53,7 +50,6 @@ import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.BJCenterViewPresenter;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -481,7 +477,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptFragment.setAnimPPTEnable(false);
         pptFragment.setLiveRoom(mRoom);
         pptFragment.setFlingEnable(false);
-        pptFragment.changePPTTouchAble(isSmallView);
+        //设置白板不消费事件
+        pptFragment.changePPTTouchAble(false);
         addFragment(R.id.ppt_container, pptFragment, false, PPT_FRAGMENT_TAG);
     }
 
@@ -665,7 +662,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
             bigPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(smallPlaceHolder.getVisibility() == View.GONE ? View.VISIBLE : View.INVISIBLE);
-            pptFragment.changePPTTouchAble(true);
         } else {
             if (mPlayerView.isPlaying() && isVideoOn) {
                 bigPlaceHolder.setVisibility(View.GONE);
@@ -675,10 +671,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
             smallPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(View.INVISIBLE);
-            pptFragment.changePPTTouchAble(false);
         }
-
-
 
         if (bigView instanceof BJPlayerView) {
             flAreaSwitch.setBackgroundResource(R.drawable.ic_video_back_stopvideo);
