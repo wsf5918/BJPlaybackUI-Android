@@ -1,9 +1,12 @@
 package com.baijia.playbackui.activity;
 
+import android.content.DialogInterface;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+
+import com.baijia.playbackui.base.BaseDialogFragment;
 
 /**
  * Created by wangkangfei on 17/8/17.
@@ -35,5 +38,22 @@ public class PBBaseActivity extends AppCompatActivity {
             transaction.commitAllowingStateLoss();
         }
 
+    }
+
+    protected void showDialogFragment(final BaseDialogFragment dialogFragment) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        dialogFragment.show(ft, dialogFragment.getClass().getSimpleName() + dialogFragment.hashCode());
+        getSupportFragmentManager().executePendingTransactions();
+        dialogFragment.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (isFinishing()) return;
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                Fragment prev = getSupportFragmentManager().findFragmentByTag(dialogFragment.getClass().getSimpleName() + dialogFragment.hashCode());
+                if (prev != null)
+                    ft.remove(prev);
+                ft.commitAllowingStateLoss();
+            }
+        });
     }
 }

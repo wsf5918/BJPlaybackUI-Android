@@ -1,9 +1,15 @@
 package com.baijia.playbackui.activity;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -27,8 +33,12 @@ import com.baijia.playbackui.R;
 import com.baijia.playbackui.adapters.DefinitionAdapter;
 import com.baijia.playbackui.base.PBBasePresenter;
 import com.baijia.playbackui.base.PBBaseView;
+import com.baijia.playbackui.chat.preview.ChatPictureViewFragment;
 import com.baijia.playbackui.chat.PBChatFragment;
 import com.baijia.playbackui.chat.PBChatPresenter;
+import com.baijia.playbackui.chat.preview.ChatPictureViewPresenter;
+import com.baijia.playbackui.chat.preview.ChatSavePicDialogFragment;
+import com.baijia.playbackui.chat.preview.ChatSavePicDialogPresenter;
 import com.baijia.playbackui.progressbar.PBRoomProgressPresenter;
 import com.baijia.playbackui.utils.ConstantUtil;
 import com.baijia.playbackui.utils.PBDisplayUtils;
@@ -50,12 +60,17 @@ import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.BJCenterViewPresenter;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 
 
+import static android.R.attr.path;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
@@ -373,7 +388,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         mPlayerView.setTopPresenter(progressPresenter);
         mPlayerView.setBottomPresenter(progressPresenter);
         BJCenterViewPresenter bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
-        bjCenterViewPresenter.setRightMenuHidden(true);
+        bjCenterViewPresenter.setRightMenuHidden(false);
         mPlayerView.setCenterPresenter(bjCenterViewPresenter);
         mPlayerView.setGestureEnable(false);
 //        mPlayerView.setForbidConfiguration(true);
@@ -391,9 +406,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
                 break;
             default:
+                LivePlaybackSDK.deployType = LPConstants.LPDeployType.Product;
                 break;
         }
-
         if (isOfflineRoom) {
             mRoom = LivePlaybackSDK.newPlayBackRoom(this, Long.parseLong(roomId), videoFilePath, signalFilePath);
         } else {
@@ -459,11 +474,15 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void onLaunchSuccess(LiveRoom liveRoom) {
-        if (launchStepDlg != null) {
-            launchStepDlg.dismiss();
-        }
         videoLunchSuccess = true;
-        launchSuccess();
+        if (mPlayerView != null) {
+            if (mPlayerView.isPlaying()) {
+                mPlayerView.pauseVideo();
+            } else {
+                mPlayerView.playVideo();
+            }
+        }
+        markNameTv.setText(mRoom.getTeacherUser().getName());
     }
 
 
@@ -480,20 +499,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         //设置白板不消费事件
         pptFragment.changePPTTouchAble(false);
         addFragment(R.id.ppt_container, pptFragment, false, PPT_FRAGMENT_TAG);
-    }
-
-    /**
-     * 进入房间成功
-     */
-    private void launchSuccess() {
-        if (mPlayerView != null) {
-            if (mPlayerView.isPlaying()) {
-                mPlayerView.pauseVideo();
-            } else {
-                mPlayerView.playVideo();
-            }
-        }
-        markNameTv.setText(mRoom.getTeacherUser().getName());
     }
 
     private <V extends PBBaseView, P extends PBBasePresenter> void bindVP(V view, P presenter) {
@@ -742,7 +747,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onVideoPrepared(BJPlayerView playerView) {
-
+            if (launchStepDlg != null) {
+                launchStepDlg.dismiss();
+            }
         }
 
         @Override
@@ -797,7 +804,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             definitionContainer.setLayoutManager(manager);
             definitionContainer.setAdapter(definitionAdapter);
         }
-
         return isOrientation;
     }
 
@@ -826,11 +832,75 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 mPlayerView.setVideoDefinition(BJPlayerView.VIDEO_DEFINITION_1080p);
                 progressPresenter.setDefinition("1080P");
                 break;
-
-
         }
         flContainerProgress.setVisibility(View.VISIBLE);
         definitionRl.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showBigChatPic(String url) {
+        ChatPictureViewFragment fragment = ChatPictureViewFragment.newInstance(url);
+        ChatPictureViewPresenter presenter = new ChatPictureViewPresenter();
+        bindVP(fragment, presenter);
+        showDialogFragment(fragment);
+    }
+
+
+    @Override
+    public void realSaveBmpToFile(byte[] bmpArray) {
+        saveImageToGallery(bmpArray);
+    }
+
+    @Override
+    public void showSavePicDialog(byte[] bmpArray) {
+        ChatSavePicDialogFragment fragment = new ChatSavePicDialogFragment();
+        ChatSavePicDialogPresenter presenter = new ChatSavePicDialogPresenter(bmpArray);
+        bindVP(fragment, presenter);
+        showDialogFragment(fragment);
+    }
+
+    /**
+     * 保存图片
+     */
+    private void saveImageToGallery(final byte[] bmpArray) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 首先保存图片
+                File appDir = new File(Environment.getExternalStorageDirectory(), "bjhl_lp_image");
+                if (!appDir.exists()) {
+                    appDir.mkdir();
+                }
+                String fileName = System.currentTimeMillis() + ".jpg";
+                File file = new File(appDir, fileName);
+                final String picPath = file.getAbsolutePath();
+                try {
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bmpArray, 0, bmpArray.length);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // 其次把文件插入到系统图库
+                try {
+                    MediaStore.Images.Media.insertImage(getContentResolver(),
+                            file.getAbsolutePath(), fileName, null);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                // 最后通知图库更新
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + path)));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PBRoomActivity.this, "图片保存在" + picPath, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }).start();
     }
 
     private void updateWaterMark() {

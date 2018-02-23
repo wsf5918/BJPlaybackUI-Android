@@ -9,13 +9,15 @@ import com.baijia.playbackui.activity.PBRouterListener;
 public class PBChatPresenter implements PBChatContract.Presenter {
     private PBChatContract.View view;
 
+    public PBRouterListener routerListener;
+
     public PBChatPresenter(PBChatContract.View view) {
         this.view = view;
     }
 
     @Override
     public void setRouter(PBRouterListener listener) {
-
+        this.routerListener = listener;
     }
 
     @Override
@@ -25,6 +27,16 @@ public class PBChatPresenter implements PBChatContract.Presenter {
 
     @Override
     public void destroy() {
+        routerListener = null;
+    }
+
+    @Override
+    public void subscribe() {
+
+    }
+
+    @Override
+    public void unSubscribe() {
 
     }
 }

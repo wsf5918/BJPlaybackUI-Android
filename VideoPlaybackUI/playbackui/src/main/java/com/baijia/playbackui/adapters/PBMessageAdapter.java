@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baijia.playbackui.R;
+import com.baijia.playbackui.chat.PBChatPresenter;
 import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijia.player.playback.PBRoom;
 import com.baijiahulian.livecore.context.LPConstants;
@@ -38,15 +39,15 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int MESSAGE_TYPE_IMAGE = 2;
 
     private Context context;
-    private PBRoom mRoom;
     private int emojiSize;
     private int orientationState;
     private List<IMessageModel> messageModelList = new ArrayList<>();
+    private PBChatPresenter pbChatPresenter;
 
-    public PBMessageAdapter(Context context, PBRoom room) {
+    public PBMessageAdapter(Context context, PBChatPresenter pbChatPresenter) {
         this.context = context;
-        this.mRoom = room;
         emojiSize = (int) (PBDisplayUtils.getScreenDensity(context) * 32);
+        this.pbChatPresenter = pbChatPresenter;
     }
 
     public void setMessageModelList(List<IMessageModel> messageModelList) {
@@ -92,7 +93,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        IMessageModel messageModel = messageModelList.get(position);
+        final IMessageModel messageModel = messageModelList.get(position);
 
         int color;
         if (messageModel.getFrom().getType() == LPConstants.LPUserType.Teacher) {
@@ -141,7 +142,6 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 //                    return false;
 //                }
 //            }).apply(options).into(imageViewHolder.ivImg);
-
             Picasso.with(context).load(messageModel.getUrl())
                     .resize(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150))
                     .into(imageViewHolder.ivImg, new Callback() {
@@ -155,7 +155,12 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                             imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
                         }
                     });
-
+            imageViewHolder.ivImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pbChatPresenter.routerListener.showBigChatPic(messageModel.getUrl());
+                }
+            });
             if (orientationState == Configuration.ORIENTATION_LANDSCAPE) {
                 imageViewHolder.chatImageGroup.setBackgroundResource(R.drawable.shape_pb_live_item_chat_blue_bg);
             } else {

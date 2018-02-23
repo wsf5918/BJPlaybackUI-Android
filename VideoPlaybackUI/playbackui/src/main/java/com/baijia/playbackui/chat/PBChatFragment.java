@@ -26,12 +26,11 @@ import rx.functions.Action1;
 public class PBChatFragment extends Fragment implements PBChatContract.View {
     //view
     private RecyclerView rvChat;
-
     //data
     private PBRoom mRoom;
-
     //adapter
     private PBMessageAdapter messageAdapter;
+    private PBChatPresenter pbChatPresenter;
 
     public void setRoom(PBRoom room) {
         this.mRoom = room;
@@ -57,7 +56,7 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
     }
 
     private void init(View view) {
-        messageAdapter = new PBMessageAdapter(getContext(), mRoom);
+        messageAdapter = new PBMessageAdapter(getContext(), pbChatPresenter);
         rvChat = (RecyclerView) view.findViewById(R.id.rv_pb_fragment_chat);
         rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
         rvChat.setAdapter(messageAdapter);
@@ -77,6 +76,6 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
 
     @Override
     public void setPresenter(PBChatContract.Presenter presenter) {
-
+        pbChatPresenter = (PBChatPresenter) presenter;
     }
 }

@@ -27,5 +27,14 @@ public interface PBRouterListener {
 
     void selectDefinition(String type, int position);
 
+    /**
+     * 显示聊天的大图
+     * @param url
+     */
+    void showBigChatPic(String url);
+
+    void realSaveBmpToFile(byte[] bmpArray);
+
+    void showSavePicDialog(byte[] bmpArray);
 
 }

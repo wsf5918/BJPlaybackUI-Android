@@ -12,4 +12,8 @@ public interface PBBasePresenter {
     void create();
 
     void destroy();
+
+    void subscribe();
+
+    void unSubscribe();
 }
