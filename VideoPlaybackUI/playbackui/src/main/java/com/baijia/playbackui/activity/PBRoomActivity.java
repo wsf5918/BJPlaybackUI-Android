@@ -9,6 +9,7 @@ import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -483,6 +484,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
         }
         markNameTv.setText(mRoom.getTeacherUser().getName());
+        if (launchStepDlg != null) {
+            launchStepDlg.dismiss();
+        }
     }
 
 
@@ -747,9 +751,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onVideoPrepared(BJPlayerView playerView) {
-            if (launchStepDlg != null) {
-                launchStepDlg.dismiss();
-            }
+
         }
 
         @Override
