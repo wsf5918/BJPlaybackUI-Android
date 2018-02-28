@@ -7,9 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -34,9 +34,9 @@ import com.baijia.playbackui.R;
 import com.baijia.playbackui.adapters.DefinitionAdapter;
 import com.baijia.playbackui.base.PBBasePresenter;
 import com.baijia.playbackui.base.PBBaseView;
-import com.baijia.playbackui.chat.preview.ChatPictureViewFragment;
 import com.baijia.playbackui.chat.PBChatFragment;
 import com.baijia.playbackui.chat.PBChatPresenter;
+import com.baijia.playbackui.chat.preview.ChatPictureViewFragment;
 import com.baijia.playbackui.chat.preview.ChatPictureViewPresenter;
 import com.baijia.playbackui.chat.preview.ChatSavePicDialogFragment;
 import com.baijia.playbackui.chat.preview.ChatSavePicDialogPresenter;
@@ -69,7 +69,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-
 
 import static android.R.attr.path;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
@@ -118,6 +117,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // 5.0+ 打开硬件加速
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                    WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pbroom);
         initView();
