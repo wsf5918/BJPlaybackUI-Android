@@ -104,7 +104,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private boolean isOrientation = true;//用来判断当前是横屏还是竖屏(初始话为竖屏)
     private List<VideoItem.DefinitionItem> definitionItems = new ArrayList<>();
     private DefinitionAdapter definitionAdapter;
-    private int selectPositon = -1;
+    private int selectPosition = -1;
 
     private boolean videoLunchSuccess = false;
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
@@ -487,9 +487,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
         }
         markNameTv.setText(mRoom.getTeacherUser().getName());
-        if (launchStepDlg != null) {
-            launchStepDlg.dismiss();
-        }
     }
 
 
@@ -711,7 +708,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             isVideoInfoInitialized = true;
 
             //默认设置最高清晰度(只针对在线视频)
-            if (!mRoom.isPlayBackOffline() && selectPositon == -1 && definitionItems != null && definitionItems.size() > 0) {
+            if (!mRoom.isPlayBackOffline() && selectPosition == -1 && definitionItems != null && definitionItems.size() > 0) {
                 int position = definitionItems.size() - 1;
                 VideoItem.DefinitionItem definitionItem = definitionItems.get(position);
                 selectDefinition(definitionItem.type, position);
@@ -720,7 +717,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onError(BJPlayerView playerView, int code) {
-
+            if (isSmallView) {
+                smallPlaceHolder.setVisibility(View.GONE);
+            } else{
+                bigPlaceHolder.setVisibility(View.GONE);
+            }
+            if (launchStepDlg != null) {
+                launchStepDlg.dismiss();
+            }
         }
 
         @Override
@@ -754,7 +758,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onVideoPrepared(BJPlayerView playerView) {
-
+            if (launchStepDlg != null) {
+                launchStepDlg.dismiss();
+            }
         }
 
         @Override
@@ -776,7 +782,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void showChoseDefinitionDlg() {
         if (isVideoInfoInitialized) {
-            definitionAdapter.setSelectPosition(selectPositon);
+            definitionAdapter.setSelectPosition(selectPosition);
             definitionRl.setVisibility(View.VISIBLE);
             //definitionView.setVisibility(View.VISIBLE);
             flContainerProgress.setVisibility(View.INVISIBLE);
@@ -814,7 +820,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public void selectDefinition(String type, int position) {
-        this.selectPositon = position;
+        this.selectPosition = position;
         definitionAdapter.notifyDataSetChanged();
         switch (type) {
             case "low":
