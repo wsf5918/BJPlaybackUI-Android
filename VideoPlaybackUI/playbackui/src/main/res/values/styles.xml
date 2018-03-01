@@ -7,8 +7,8 @@
     </style>
 
     <style name="bottom_menu_animation">
-        <item name="@android:windowEnterAnimation">@anim/bottom_menu_appear</item>
-        <item name="@android:windowExitAnimation">@anim/bottom_menu_disappear</item>
+        <item name="android:windowEnterAnimation">@anim/bottom_menu_appear</item>
+        <item name="android:windowExitAnimation">@anim/bottom_menu_disappear</item>
     </style>
 
     <style name="LiveTextTitle">

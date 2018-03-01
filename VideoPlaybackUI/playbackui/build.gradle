@@ -2,12 +2,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -33,12 +33,11 @@ dependencies {
     })
 
     //测试
-//    compile project(path: ':video-playback') //回放core
-//    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
+    compile project(path: ':video-playback') //回放core
+    compile project(path: ":liveplayer-sdk-core-ppt")  //ppt
     //打包
-    compile 'com.baijia.player:video-playback:1.2.5-snapshot'
-    compile 'com.baijia.player:videoplayer:1.6.15-snapshot'
-    compile 'com.baijia.live:liveplayer-sdk-core-ppt:1.2.5'
+//    compile 'com.baijia.player:video-playback:1.3.0'
+//    compile 'com.baijia.live:liveplayer-sdk-core-ppt:1.3.0'
 
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
