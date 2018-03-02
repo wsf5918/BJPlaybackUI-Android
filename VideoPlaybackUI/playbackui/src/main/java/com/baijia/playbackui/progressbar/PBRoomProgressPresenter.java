@@ -53,7 +53,6 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
             @Override
             public void onClick(View v) {
                 if (mPlayerView != null) {
-                    routerListener.changeZhanweiAndVideo();
                     if (mPlayerView.isPlaying()) {
                         mPlayerView.pauseVideo();
                     } else {

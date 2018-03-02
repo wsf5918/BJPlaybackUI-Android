@@ -16,11 +16,6 @@ public interface PBRouterListener {
     void showChoseRateDlg();
 
     /**
-     * 切换视频和站位图
-     */
-    void changeZhanweiAndVideo();
-
-    /**
      * 切换横屏竖屏
      */
     boolean changeOrientation();

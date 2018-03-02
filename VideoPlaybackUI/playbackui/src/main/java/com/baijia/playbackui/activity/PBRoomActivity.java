@@ -75,6 +75,7 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, PBRouterListener {
+    private static final String TAG = PBRoomActivity.class.getSimpleName();
     //view
     private MaterialDialog launchStepDlg;
     private BJPlayerView mPlayerView;
@@ -426,6 +427,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                     @Override
                     public void call(Boolean aBoolean) {
                         isVideoOn = aBoolean;
+                        Log.d(TAG, "isVideoOn=" + isVideoOn);
                         if (isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
@@ -487,6 +489,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
         }
         markNameTv.setText(mRoom.getTeacherUser().getName());
+        if (launchStepDlg != null) {
+            launchStepDlg.dismiss();
+        }
     }
 
 
@@ -722,14 +727,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             } else{
                 bigPlaceHolder.setVisibility(View.GONE);
             }
-            if (launchStepDlg != null) {
-                launchStepDlg.dismiss();
-            }
+//            if (launchStepDlg != null) {
+//                launchStepDlg.dismiss();
+//            }
         }
 
         @Override
         public void onUpdatePosition(BJPlayerView playerView, int position) {
-
+            Log.d(TAG, "onUpdatePosition position:" + position);
         }
 
         @Override
@@ -748,6 +753,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
+            Log.d(TAG, "onPlayCompleted");
             if (isSmallView) {
                 nameMask.setVisibility(View.INVISIBLE);
                 smallPlaceHolder.setVisibility(View.VISIBLE);
@@ -758,9 +764,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onVideoPrepared(BJPlayerView playerView) {
-            if (launchStepDlg != null) {
-                launchStepDlg.dismiss();
-            }
+//            if (launchStepDlg != null) {
+//                launchStepDlg.dismiss();
+//            }
         }
 
         @Override
@@ -793,11 +799,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     public void showChoseRateDlg() {
         rateView.setVisibility(View.VISIBLE);
         flContainerProgress.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void changeZhanweiAndVideo() {
-
     }
 
     @Override
