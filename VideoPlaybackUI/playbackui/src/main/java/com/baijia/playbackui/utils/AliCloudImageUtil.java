@@ -142,12 +142,10 @@ public class AliCloudImageUtil {
             }
             if (url.contains("x-oss-process")) {
                 HashMap<String, String> hashMap = (LPBJUrl.parse(url)).getParameters();
-//                Log.e("debugRound1: ", url.replace(hashMap.get("x-oss-process"), "image/circle,r_" + String.valueOf(radius) + "/format" + imageUrlSuffix()));
                 return url.replace(hashMap.get("x-oss-process"), "image/circle,r_" + String.valueOf(radius) + "/format" + imageUrlSuffix());
             } else {
                 StringBuilder stringBuilder = new StringBuilder(url);
                 stringBuilder.insert(url.indexOf("?") + 1, "x-oss-process=image/circle,r_" + String.valueOf(radius) + "/format" + imageUrlSuffix() + "&");
-
                 return stringBuilder.toString();
             }
         }

@@ -38,14 +38,14 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
     }
 
     private void initView(View view) {
-        ivStartPause = (ImageView) view.findViewById(R.id.iv_pb_progress_start_pause);
-        tvDefinition = (TextView) view.findViewById(R.id.tv_pb_progress_definition);
-        tvRate = (TextView) view.findViewById(R.id.tv_pb_progress_rate);
-        ivSwitchScreen = (ImageView) view.findViewById(R.id.iv_pb_progress_switch_screen);
-        tvCurrent = (TextView) view.findViewById(R.id.tv_pb_progress_current_time);
-        tvDivider = (TextView) view.findViewById(R.id.tv_pb_progress_separator);
-        tvTotal = (TextView) view.findViewById(R.id.tv_pb_progress_total_time);
-        sbMain = (SeekBar) view.findViewById(R.id.sb_pb_progress_main);
+        ivStartPause = view.findViewById(R.id.iv_pb_progress_start_pause);
+        tvDefinition =  view.findViewById(R.id.tv_pb_progress_definition);
+        tvRate =  view.findViewById(R.id.tv_pb_progress_rate);
+        ivSwitchScreen =  view.findViewById(R.id.iv_pb_progress_switch_screen);
+        tvCurrent =  view.findViewById(R.id.tv_pb_progress_current_time);
+        tvDivider =  view.findViewById(R.id.tv_pb_progress_separator);
+        tvTotal =  view.findViewById(R.id.tv_pb_progress_total_time);
+        sbMain =  view.findViewById(R.id.sb_pb_progress_main);
     }
 
     private void initListener() {

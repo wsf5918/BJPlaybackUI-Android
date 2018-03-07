@@ -16,8 +16,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +116,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     private ImageView smallPlaceHolder;
     private ImageView bigPlaceHolder;
-    private boolean isVideoOn;
+    private boolean isVideoOn = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +165,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .fit()
                 .error(R.color.lp_ppt_white)
                 .into(bigPlaceHolder);
-
 
         dlChat.openDrawer(Gravity.START);
         dlChat.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
@@ -341,6 +342,19 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
             }
         });
+        mPlayerView.setPlayerTapListener(new BJPlayerView.OnPlayerTapListener() {
+            @Override
+            public void onSingleTapUp(MotionEvent e) {
+                if(!isSmallView){
+                    flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onDoubleTap(MotionEvent e) {
+
+            }
+        });
     }
 
     public void setRate(String rate) {
@@ -357,7 +371,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             videoFilePath = getIntent().getStringExtra(ConstantUtil.PB_ROOM_VIDEOFILE_PATH);
             signalFilePath = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SIGNALFILE_PATH);
             deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
-
             //进入离线回放教室
             doEnterRoom(true);
 
@@ -366,7 +379,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);
             sessionId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_SESSION_ID);
             deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
-
             //进入在线回放教室
             doEnterRoom(false);
         }
@@ -393,8 +405,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         mPlayerView.setTopPresenter(progressPresenter);
         mPlayerView.setBottomPresenter(progressPresenter);
         BJCenterViewPresenter bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
-        bjCenterViewPresenter.setRightMenuHidden(false);
         mPlayerView.setCenterPresenter(bjCenterViewPresenter);
+        //小窗口禁用手势
         mPlayerView.setGestureEnable(false);
 //        mPlayerView.setForbidConfiguration(true);
 
@@ -674,6 +686,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             if (!isVideoOn || !mPlayerView.isPlaying()) {
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             }
+            mPlayerView.setGestureEnable(false);
             bigPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(smallPlaceHolder.getVisibility() == View.GONE ? View.VISIBLE : View.INVISIBLE);
         } else {
@@ -683,6 +696,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             if (!isVideoOn || !mPlayerView.isPlaying()) {
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
+            mPlayerView.setGestureEnable(true);
             smallPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(View.INVISIBLE);
         }
@@ -734,7 +748,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onUpdatePosition(BJPlayerView playerView, int position) {
-            Log.d(TAG, "onUpdatePosition position:" + position);
+//            Log.d(TAG, "onUpdatePosition position:" + position);
         }
 
         @Override
@@ -760,6 +774,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             } else {
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
+            isVideoOn = true;
         }
 
         @Override
