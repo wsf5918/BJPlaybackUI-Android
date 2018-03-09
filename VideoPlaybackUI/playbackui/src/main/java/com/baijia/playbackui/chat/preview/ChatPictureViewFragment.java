@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.baijia.playbackui.R;
 import com.baijia.playbackui.base.BaseDialogFragment;
-import com.baijiahulian.livecore.ppt.util.AliCloudImageUtil;
+import com.baijia.playbackui.utils.AliCloudImageUtil;
 import com.baijiahulian.livecore.utils.DisplayUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
