@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.baijia.playbackui.R;
 import com.baijia.playbackui.base.BaseDialogFragment;
-import com.baijia.playbackui.utils.AliCloudImageUtil;
+import com.baijiahulian.livecore.ppt.util.AliCloudImageUtil;
 import com.baijiahulian.livecore.utils.DisplayUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -51,8 +51,8 @@ public class ChatPictureViewFragment extends BaseDialogFragment implements ChatP
     protected void init(Bundle savedInstanceState, Bundle arguments) {
         super.hideBackground().contentBackgroundColor(ContextCompat.getColor(getContext(), R.color.live_transparent));
         String url = arguments.getString("url");
-        imageView = (ImageView) contentView.findViewById(R.id.lp_dialog_big_picture_img);
-        tvLoading = (TextView) contentView.findViewById(R.id.lp_dialog_big_picture_loading_label);
+        imageView =  contentView.findViewById(R.id.lp_dialog_big_picture_img);
+        tvLoading =  contentView.findViewById(R.id.lp_dialog_big_picture_loading_label);
 //        btnSave = (Button) view.findViewById(R.id.lp_dialog_big_picture_save);
         Picasso.with(getContext())
                 .load(AliCloudImageUtil.getScaledUrl(url, AliCloudImageUtil.SCALED_MFIT, DisplayUtils.getScreenWidthPixels(getContext()), DisplayUtils.getScreenHeightPixels(getContext())))

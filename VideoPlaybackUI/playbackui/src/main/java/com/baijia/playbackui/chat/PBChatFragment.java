@@ -57,7 +57,7 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
 
     private void init(View view) {
         messageAdapter = new PBMessageAdapter(getContext(), pbChatPresenter);
-        rvChat = (RecyclerView) view.findViewById(R.id.rv_pb_fragment_chat);
+        rvChat = view.findViewById(R.id.rv_pb_fragment_chat);
         rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
         rvChat.setAdapter(messageAdapter);
 

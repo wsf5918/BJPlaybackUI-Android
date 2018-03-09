@@ -117,6 +117,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private ImageView smallPlaceHolder;
     private ImageView bigPlaceHolder;
     private boolean isVideoOn = true;
+    private BJCenterViewPresenter bjCenterViewPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -339,14 +340,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerBig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
             }
         });
         mPlayerView.setPlayerTapListener(new BJPlayerView.OnPlayerTapListener() {
             @Override
             public void onSingleTapUp(MotionEvent e) {
                 if(!isSmallView){
-                    flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                    flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
                 }
             }
 
@@ -404,7 +405,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         mPlayerView.setTopPresenter(progressPresenter);
         mPlayerView.setBottomPresenter(progressPresenter);
-        BJCenterViewPresenter bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
+        bjCenterViewPresenter = new BJCenterViewPresenter(mPlayerView.getCenterView());
+        bjCenterViewPresenter.setRightMenuHidden(true);
         mPlayerView.setCenterPresenter(bjCenterViewPresenter);
         //小窗口禁用手势
         mPlayerView.setGestureEnable(false);
@@ -650,6 +652,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (mPlayerView != null) {
             mPlayerView.onResume();
         }
+        setSurfaceZOrderMediaOverlay(flContainerBig, false);
+        setSurfaceZOrderMediaOverlay(flContainerSmall, true);
     }
 
     @Override
@@ -686,6 +690,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             if (!isVideoOn || !mPlayerView.isPlaying()) {
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             }
+            bjCenterViewPresenter.setRightMenuHidden(true);
+            bjCenterViewPresenter.onHide();
             mPlayerView.setGestureEnable(false);
             bigPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(smallPlaceHolder.getVisibility() == View.GONE ? View.VISIBLE : View.INVISIBLE);
@@ -696,6 +702,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             if (!isVideoOn || !mPlayerView.isPlaying()) {
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
+            bjCenterViewPresenter.setRightMenuHidden(false);
+            bjCenterViewPresenter.onShow();
             mPlayerView.setGestureEnable(true);
             smallPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(View.INVISIBLE);
@@ -741,6 +749,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             } else{
                 bigPlaceHolder.setVisibility(View.GONE);
             }
+//            //检测到是移动网络
+//            if(code == -2){
+//                mPlayerView.setEnableNetWatcher(false);//关闭移动网络检测提示
+//            }
 //            if (launchStepDlg != null) {
 //                launchStepDlg.dismiss();
 //            }
