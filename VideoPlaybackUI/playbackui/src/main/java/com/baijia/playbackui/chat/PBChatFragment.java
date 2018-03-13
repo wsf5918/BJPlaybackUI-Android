@@ -14,7 +14,6 @@ import com.baijia.playbackui.adapters.PBMessageAdapter;
 import com.baijia.player.playback.PBRoom;
 import com.baijiahulian.livecore.models.imodels.IMessageModel;
 
-import java.io.Serializable;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -33,6 +32,11 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
     private PBMessageAdapter messageAdapter;
     private PBChatPresenter pbChatPresenter;
 
+    public void setRoom(PBRoom room) {
+        this.mRoom = room;
+        mRoom.getChatVM();
+    }
+
     public void setOrientation(int state) {
         if(messageAdapter != null){
             messageAdapter.setOrientation(state);
@@ -41,14 +45,6 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
             rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
             rvChat.setAdapter(messageAdapter);
         }
-    }
-
-    public static PBChatFragment getInstance(PBRoom pbRoomImpl){
-        PBChatFragment chatFragment = new PBChatFragment();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("pbRoom", (Serializable) pbRoomImpl);
-        chatFragment.setArguments(bundle);
-        return chatFragment;
     }
 
     @Nullable
@@ -64,10 +60,6 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
         rvChat = view.findViewById(R.id.rv_pb_fragment_chat);
         rvChat.setLayoutManager(new LinearLayoutManager(getContext()));
         rvChat.setAdapter(messageAdapter);
-
-        if(mRoom == null){
-            mRoom = (PBRoom) getArguments().getSerializable("pbRoom");
-        }
         if(mRoom != null){
             mRoom.getChatVM().getObservableOfNotifyDataChange()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -81,7 +73,6 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
                         }
                     });
         }
-
     }
 
     @Override

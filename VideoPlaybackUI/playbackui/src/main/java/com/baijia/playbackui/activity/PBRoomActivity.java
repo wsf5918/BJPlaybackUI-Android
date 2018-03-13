@@ -510,7 +510,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
 
     private void addFragment() {
-        chatFragment = PBChatFragment.getInstance(mRoom);
+        chatFragment = new PBChatFragment();
+        chatFragment.setRoom(mRoom);
         bindVP(chatFragment, new PBChatPresenter(chatFragment));
         addFragment(R.id.fl_pb_chat_content_container, chatFragment, false, CHAT_FRAGMENT_TAG);
 
