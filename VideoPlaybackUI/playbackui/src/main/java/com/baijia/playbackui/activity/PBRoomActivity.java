@@ -510,8 +510,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
 
     private void addFragment() {
-        chatFragment = new PBChatFragment();
-        chatFragment.setRoom(mRoom);
+        chatFragment = PBChatFragment.getInstance(mRoom);
         bindVP(chatFragment, new PBChatPresenter(chatFragment));
         addFragment(R.id.fl_pb_chat_content_container, chatFragment, false, CHAT_FRAGMENT_TAG);
 
@@ -538,6 +537,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         doOnChatDrawerConfigurationChanged(newConfig);
         flContainerSmall.configurationChanged();
         isOrientation = newConfig.orientation == ORIENTATION_PORTRAIT;
+        //横屏禁用手势
+        mPlayerView.setGestureEnable(!isOrientation);
         progressPresenter.onOrientationChanged(isOrientation);
         if (videoLunchSuccess) {
             if (chatFragment == null) {
