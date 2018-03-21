@@ -125,6 +125,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
+        if(savedInstanceState != null){
+            String FRAGMENTS_TAG = "android:support:fragments";
+            savedInstanceState.remove(FRAGMENTS_TAG);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pbroom);
         initView();
@@ -302,7 +306,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 rateHigh.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
                 flContainerProgress.setVisibility(View.VISIBLE);
                 rateView.setVisibility(View.GONE);
-                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_1_1_X);
+                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_1_X);
                 setRate(rateLow.getText().toString());
             }
         });
@@ -374,7 +378,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             deployType = getIntent().getIntExtra(ConstantUtil.PB_ROOM_DEPLOY, 2);
             //进入离线回放教室
             doEnterRoom(true);
-
         } else {
             roomId = getIntent().getStringExtra(ConstantUtil.PB_ROOM_ID);
             roomToken = getIntent().getStringExtra(ConstantUtil.PB_ROOM_TOKEN);

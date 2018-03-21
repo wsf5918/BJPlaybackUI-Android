@@ -1,5 +1,6 @@
 package com.baijia.playbackui.progressbar;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -11,6 +12,7 @@ import com.baijia.playbackui.utils.StringUtils;
 import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.playerview.IPlayerBottomContact;
 import com.baijiahulian.player.playerview.IPlayerTopContact;
+import com.baijiahulian.player.utils.NetUtils;
 
 /**
  * Created by wangkangfei on 17/8/16.
@@ -91,6 +93,17 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
                     mPlayerView.seekVideo(pos);
                 }
                 userTouch = false;
+            }
+        });
+
+        sbMain.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int netType = NetUtils.getNetworkType(v.getContext());
+                if(netType <= 1){
+                    return true;
+                }
+                return false;
             }
         });
         tvDefinition.setOnClickListener(new View.OnClickListener() {
