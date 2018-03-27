@@ -47,6 +47,7 @@ import com.baijia.playbackui.utils.ConstantUtil;
 import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijia.playbackui.viewsupport.AutoExitDrawerLayout;
 import com.baijia.playbackui.viewsupport.DragTextView;
+import com.baijia.playbackui.viewsupport.PPTGestureMaskLayout;
 import com.baijia.player.playback.LivePlaybackSDK;
 import com.baijia.player.playback.PBRoom;
 import com.baijia.player.playback.mocklive.OnPlayerListener;
@@ -118,6 +119,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private ImageView bigPlaceHolder;
     private boolean isVideoOn = true;
     private BJCenterViewPresenter bjCenterViewPresenter;
+    private PPTGestureMaskLayout pptGestureMask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +160,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         definitionContainer = (RecyclerView) findViewById(R.id.fl_pb_container_definition);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         definitionContainer.setLayoutManager(linearLayoutManager);
+
+        pptGestureMask = findViewById(R.id.ppt_gesture_mask);
+        pptGestureMask.setGestureEnable(true);
+        pptGestureMask.setBjPlayerView(mPlayerView);
 
         Picasso.with(this)
                 .load(ConstantUtil.AUDIO_ON_PICTURE)
@@ -345,6 +351,17 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             @Override
             public void onClick(View v) {
                 flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+            }
+        });
+        pptGestureMask.setPlayerTapListener(new PPTGestureMaskLayout.OnPlayerTapListener() {
+            @Override
+            public void onSingleTapUp(MotionEvent e) {
+                flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+            }
+
+            @Override
+            public void onDoubleTap(MotionEvent e) {
+
             }
         });
         mPlayerView.setPlayerTapListener(new BJPlayerView.OnPlayerTapListener() {
@@ -698,6 +715,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             bjCenterViewPresenter.setRightMenuHidden(true);
             bjCenterViewPresenter.onHide();
             mPlayerView.setGestureEnable(false);
+            pptGestureMask.setGestureEnable(true);
             bigPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(smallPlaceHolder.getVisibility() == View.GONE ? View.VISIBLE : View.INVISIBLE);
         } else {
@@ -710,6 +728,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             bjCenterViewPresenter.setRightMenuHidden(false);
             bjCenterViewPresenter.onShow();
             mPlayerView.setGestureEnable(true);
+            pptGestureMask.setGestureEnable(false);
             smallPlaceHolder.setVisibility(View.GONE);
             nameMask.setVisibility(View.INVISIBLE);
         }

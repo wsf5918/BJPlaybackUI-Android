@@ -26,6 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <com.baijia.playbackui.viewsupport.PPTGestureMaskLayout
+            android:id="@+id/ppt_gesture_mask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            />
+
         <ImageView
             android:id="@+id/pb_player_big_placeholder"
             android:layout_width="match_parent"
@@ -33,7 +40,6 @@
             android:scaleType="centerCrop"
             android:visibility="gone"
             />
-
     </FrameLayout>
 
     <!--进度条-->
