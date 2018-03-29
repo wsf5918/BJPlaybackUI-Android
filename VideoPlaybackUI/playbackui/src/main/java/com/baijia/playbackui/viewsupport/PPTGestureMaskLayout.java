@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import com.baijia.playbackui.R;
 import com.baijia.playbackui.utils.Query;
 import com.baijiahulian.player.BJPlayerView;
+import com.baijiahulian.player.mediaplayer.IMediaPlayer;
 import com.baijiahulian.player.utils.Utils;
 
 
@@ -68,10 +69,10 @@ public class PPTGestureMaskLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(bjPlayerView == null || !bjPlayerView.isPlaying()){
+        if(bjPlayerView == null || bjPlayerView.getVideoView().getMediaPlayer() == null ||
+                bjPlayerView.getVideoView().getMediaPlayer().getPlayState() < IMediaPlayer.PlayerState.STATE_PREPARING){
             return false;
         }
-
         if (isGestureEnable && mGestureDetector.onTouchEvent(event)) {
             return true;
         }
@@ -150,7 +151,6 @@ public class PPTGestureMaskLayout extends FrameLayout {
                         onBrightnessSlide(percent);
                 }
             }
-
             return super.onScroll(e1, e2, distanceX, distanceY);
         }
     }

@@ -558,8 +558,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         doOnChatDrawerConfigurationChanged(newConfig);
         flContainerSmall.configurationChanged();
         isOrientation = newConfig.orientation == ORIENTATION_PORTRAIT;
-        //横屏禁用手势
-        mPlayerView.setGestureEnable(!isOrientation);
         progressPresenter.onOrientationChanged(isOrientation);
         if (videoLunchSuccess) {
             if (chatFragment == null) {
@@ -604,8 +602,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
             lpSmallContainer.addRule(RelativeLayout.BELOW, R.id.view_pb_anchor_left_more_top);
         } else {
-            lpSmallContainer.width = PBDisplayUtils.dip2px(this, 150);
-            lpSmallContainer.height = PBDisplayUtils.dip2px(this, 90);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
