@@ -161,7 +161,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         definitionContainer.setLayoutManager(linearLayoutManager);
 
-        pptGestureMask = findViewById(R.id.ppt_gesture_mask);
+        pptGestureMask = (PPTGestureMaskLayout) findViewById(R.id.ppt_gesture_mask);
         pptGestureMask.setGestureEnable(true);
         pptGestureMask.setBjPlayerView(mPlayerView);
 

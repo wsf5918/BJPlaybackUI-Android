@@ -10,6 +10,7 @@ import com.baijia.playbackui.R;
 import com.baijia.playbackui.activity.PBRouterListener;
 import com.baijia.playbackui.utils.StringUtils;
 import com.baijiahulian.player.BJPlayerView;
+import com.baijiahulian.player.mediaplayer.IJKMediaPlayer;
 import com.baijiahulian.player.playerview.IPlayerBottomContact;
 import com.baijiahulian.player.playerview.IPlayerTopContact;
 import com.baijiahulian.player.utils.NetUtils;
@@ -57,6 +58,7 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
                 if (mPlayerView != null) {
                     if (mPlayerView.isPlaying()) {
                         mPlayerView.pauseVideo();
+                        IJKMediaPlayer.isPlayBackground = true;
                     } else {
                         mPlayerView.playVideo();
                     }
