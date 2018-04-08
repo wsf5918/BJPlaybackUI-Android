@@ -62,6 +62,7 @@ public class PBChatFragment extends Fragment implements PBChatContract.View {
         rvChat.setAdapter(messageAdapter);
         if(mRoom != null){
             mRoom.getChatVM().getObservableOfNotifyDataChange()
+                    .onBackpressureBuffer(1000)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<IMessageModel>>() {
                         @Override
