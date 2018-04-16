@@ -121,6 +121,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private BJCenterViewPresenter bjCenterViewPresenter;
     private PPTGestureMaskLayout pptGestureMask;
 
+    private boolean isShowingError;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // 5.0+ 打开硬件加速
@@ -465,7 +467,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                         if (isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-                                smallPlaceHolder.setVisibility(View.VISIBLE);
+                                if(!isShowingError){
+                                    smallPlaceHolder.setVisibility(View.VISIBLE);
+                                }
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
@@ -476,7 +480,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                         if (!isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-                                bigPlaceHolder.setVisibility(View.VISIBLE);
+                                if(!isShowingError){
+                                    bigPlaceHolder.setVisibility(View.VISIBLE);
+                                }
                                 nameMask.setVisibility(View.INVISIBLE);
                             } else {
                                 progressPresenter.openDefinitionChange();
@@ -704,8 +710,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (isSmallView) {
             if (mPlayerView.isPlaying() && isVideoOn) {
                 smallPlaceHolder.setVisibility(View.GONE);
-            }
-            if (!isVideoOn || !mPlayerView.isPlaying()) {
+            } else{
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             }
             bjCenterViewPresenter.setRightMenuHidden(true);
@@ -717,8 +722,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         } else {
             if (mPlayerView.isPlaying() && isVideoOn) {
                 bigPlaceHolder.setVisibility(View.GONE);
-            }
-            if (!isVideoOn || !mPlayerView.isPlaying()) {
+            } else{
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
             bjCenterViewPresenter.setRightMenuHidden(false);
@@ -769,6 +773,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             } else{
                 bigPlaceHolder.setVisibility(View.GONE);
             }
+            isShowingError = true;
 //            //检测到是移动网络
 //            if(code == -2){
 //                mPlayerView.setEnableNetWatcher(false);//关闭移动网络检测提示
@@ -822,11 +827,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onPlay(BJPlayerView playerView) {
+            isShowingError = false;
             if(isVideoOn){
                 if(isSmallView){
-                    smallPlaceHolder.setVisibility(View.GONE);
+                    smallPlaceHolder.setVisibility(isVideoOn ? View.GONE : View.VISIBLE);
                 } else{
-                    bigPlaceHolder.setVisibility(View.GONE);
+                    bigPlaceHolder.setVisibility(isVideoOn ? View.GONE : View.VISIBLE);
                 }
             }
         }
