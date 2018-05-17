@@ -92,9 +92,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private RelativeLayout nameMask;
     private RecyclerView definitionContainer;
     private RelativeLayout definitionRl;
-    private TextView rateLow;
-    private TextView rateMiddle;
-    private TextView rateHigh;
+    private TextView[] rateTextViewArray;
     private TextView markNameTv;
     //fragment
     private PBChatFragment chatFragment;
@@ -129,7 +127,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             String FRAGMENTS_TAG = "android:support:fragments";
             savedInstanceState.remove(FRAGMENTS_TAG);
         }
@@ -153,9 +151,12 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         smallPlaceHolder = (ImageView) findViewById(R.id.pb_player_small_placeholder);
         ivChatSwitch = (ImageView) findViewById(R.id.iv_pb_chat_switch);
         rateView = (LinearLayout) findViewById(R.id.fl_pb_container_rate);
-        rateLow = (TextView) findViewById(R.id.fragment_definition_1_0x);
-        rateMiddle = (TextView) findViewById(R.id.fragment_definition_2_0x);
-        rateHigh = (TextView) findViewById(R.id.fragment_definition_3_0x);
+        TextView rate07Tv = (TextView) findViewById(R.id.fragment_definition_0_7x);
+        TextView rate10Tv = (TextView) findViewById(R.id.fragment_definition_1_0x);
+        TextView rate12Tv = (TextView) findViewById(R.id.fragment_definition_1_2x);
+        TextView rate15Tv = (TextView) findViewById(R.id.fragment_definition_1_5x);
+        TextView rate20Tv = (TextView) findViewById(R.id.fragment_definition_2_0x);
+        rateTextViewArray = new TextView[]{rate07Tv, rate10Tv, rate12Tv, rate15Tv, rate20Tv};
         definitionRl = (RelativeLayout) findViewById(R.id.fl_pb_container_definition_rl);
         nameMask = (RelativeLayout) findViewById(R.id.rl_pb_name_mask);
         markNameTv = (TextView) findViewById(R.id.pb_name_mask_tv);
@@ -303,51 +304,28 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         /**
          * 清晰度和倍速切换
          */
-        rateLow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rateMiddle.setBackgroundResource(0);
-                rateHigh.setBackgroundResource(0);
-                rateLow.setBackgroundResource(R.drawable.shape_definition_bg);
-                rateLow.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_blue));
-                rateMiddle.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
-                rateHigh.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
-                flContainerProgress.setVisibility(View.VISIBLE);
-                rateView.setVisibility(View.GONE);
-                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_1_X);
-                setRate(rateLow.getText().toString());
-            }
-        });
-        rateMiddle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rateLow.setBackgroundResource(0);
-                rateHigh.setBackgroundResource(0);
-                rateMiddle.setBackgroundResource(R.drawable.shape_definition_bg);
-                rateMiddle.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_blue));
-                rateLow.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
-                rateHigh.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
-                flContainerProgress.setVisibility(View.VISIBLE);
-                rateView.setVisibility(View.GONE);
-                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_1_5_X);
-                setRate(rateMiddle.getText().toString());
-            }
-        });
-        rateHigh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rateLow.setBackgroundResource(0);
-                rateMiddle.setBackgroundResource(0);
-                rateHigh.setBackgroundResource(R.drawable.shape_definition_bg);
-                rateHigh.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_blue));
-                rateMiddle.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
-                rateLow.setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
-                flContainerProgress.setVisibility(View.VISIBLE);
-                rateView.setVisibility(View.GONE);
-                mPlayerView.setVideoRate(BJPlayerView.VIDEO_RATE_2_X);
-                setRate(rateHigh.getText().toString());
-            }
-        });
+        final float[] videoRateArray = new float[]{0.7f, 1.0f, 1.2f, 1.5f, 2.0f};
+        for (int i = 0; i < rateTextViewArray.length; i++) {
+            final int tempIndex = i;
+            rateTextViewArray[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (int j = 0; j < rateTextViewArray.length; j++) {
+                        if (tempIndex == j) {
+                            rateTextViewArray[tempIndex].setBackgroundResource(R.drawable.shape_definition_bg);
+                            rateTextViewArray[tempIndex].setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_blue));
+                        } else {
+                            rateTextViewArray[j].setBackgroundResource(0);
+                            rateTextViewArray[j].setTextColor(ContextCompat.getColor(PBRoomActivity.this, R.color.pb_live_white));
+                        }
+                    }
+                    flContainerProgress.setVisibility(View.VISIBLE);
+                    rateView.setVisibility(View.GONE);
+                    mPlayerView.setVideoRate(videoRateArray[tempIndex]);
+                    setRate(rateTextViewArray[tempIndex].getText().toString());
+                }
+            });
+        }
 
         flContainerBig.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -369,7 +347,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         mPlayerView.setPlayerTapListener(new BJPlayerView.OnPlayerTapListener() {
             @Override
             public void onSingleTapUp(MotionEvent e) {
-                if(!isSmallView){
+                if (!isSmallView) {
                     flContainerProgress.setVisibility(flContainerProgress.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
                 }
             }
@@ -433,6 +411,8 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         //小窗口禁用手势
         mPlayerView.setGestureEnable(false);
 //        mPlayerView.setForbidConfiguration(true);
+        //开启记忆播放
+        mPlayerView.setMemoryPlayEnable(true);
 
         flContainerProgress.addView(view);
         //enter room action
@@ -463,11 +443,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                     @Override
                     public void call(Boolean aBoolean) {
                         isVideoOn = aBoolean;
-                        Log.d(TAG, "isVideoOn=" + isVideoOn);
                         if (isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-                                if(!isShowingError){
+                                if (!isShowingError) {
                                     smallPlaceHolder.setVisibility(View.VISIBLE);
                                 }
                                 nameMask.setVisibility(View.INVISIBLE);
@@ -480,7 +459,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                         if (!isSmallView) {
                             if (!aBoolean) {
                                 progressPresenter.forbidDefinitionChange();
-                                if(!isShowingError){
+                                if (!isShowingError) {
                                     bigPlaceHolder.setVisibility(View.VISIBLE);
                                 }
                                 nameMask.setVisibility(View.INVISIBLE);
@@ -521,19 +500,11 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     public void onLaunchSuccess(LiveRoom liveRoom) {
         videoLunchSuccess = true;
-        if (mPlayerView != null) {
-            if (mPlayerView.isPlaying()) {
-                mPlayerView.pauseVideo();
-            } else {
-                mPlayerView.playVideo();
-            }
-        }
         markNameTv.setText(mRoom.getTeacherUser().getName());
         if (launchStepDlg != null) {
             launchStepDlg.dismiss();
         }
     }
-
 
     private void addFragment() {
         chatFragment = new PBChatFragment();
@@ -607,6 +578,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
             lpSmallContainer.addRule(RelativeLayout.BELOW, R.id.view_pb_anchor_left_more_top);
+            //setSurfaceZOrderMediaOverlay需要在attach window前设置才能生效
+            flContainerSmall.removeViewAt(0);
+            flContainerSmall.addView(mPlayerView, 0);
+            setSurfaceZOrderMediaOverlay(flContainerSmall, true);
         } else {
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
@@ -710,7 +685,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (isSmallView) {
             if (mPlayerView.isPlaying() && isVideoOn) {
                 smallPlaceHolder.setVisibility(View.GONE);
-            } else{
+            } else {
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             }
             bjCenterViewPresenter.setRightMenuHidden(true);
@@ -722,7 +697,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         } else {
             if (mPlayerView.isPlaying() && isVideoOn) {
                 bigPlaceHolder.setVisibility(View.GONE);
-            } else{
+            } else {
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
             bjCenterViewPresenter.setRightMenuHidden(false);
@@ -757,20 +732,13 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
             updateWaterMark();
             isVideoInfoInitialized = true;
-
-            //默认设置最高清晰度(只针对在线视频)
-            if (!mRoom.isPlayBackOffline() && selectPosition == -1 && definitionItems != null && definitionItems.size() > 0) {
-                int position = definitionItems.size() - 1;
-                VideoItem.DefinitionItem definitionItem = definitionItems.get(position);
-                selectDefinition(definitionItem.type, position);
-            }
         }
 
         @Override
         public void onError(BJPlayerView playerView, int code) {
             if (isSmallView) {
                 smallPlaceHolder.setVisibility(View.GONE);
-            } else{
+            } else {
                 bigPlaceHolder.setVisibility(View.GONE);
             }
             isShowingError = true;
@@ -828,10 +796,10 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         @Override
         public void onPlay(BJPlayerView playerView) {
             isShowingError = false;
-            if(isVideoOn){
-                if(isSmallView){
+            if (isVideoOn) {
+                if (isSmallView) {
                     smallPlaceHolder.setVisibility(isVideoOn ? View.GONE : View.VISIBLE);
-                } else{
+                } else {
                     bigPlaceHolder.setVisibility(isVideoOn ? View.GONE : View.VISIBLE);
                 }
             }

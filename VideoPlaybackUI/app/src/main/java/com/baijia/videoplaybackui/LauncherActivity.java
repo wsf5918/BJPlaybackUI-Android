@@ -15,8 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baijia.playbackui.PBRoomUI;
-import com.baijia.playbackui.activity.PBRoomActivity;
 import com.baijiahulian.livecore.context.LPConstants;
+
 
 public class LauncherActivity extends AppCompatActivity {
     private Button btnEnterRoomOnline;

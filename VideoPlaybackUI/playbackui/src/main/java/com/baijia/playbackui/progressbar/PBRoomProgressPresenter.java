@@ -102,7 +102,7 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int netType = NetUtils.getNetworkType(v.getContext());
-                if(netType <= 1){
+                if(netType <= 1 && !mPlayerView.isPlayLocalVideo()){
                     return true;
                 }
                 return false;
