@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -578,10 +579,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
             lpSmallContainer.addRule(RelativeLayout.BELOW, R.id.view_pb_anchor_left_more_top);
-            //setSurfaceZOrderMediaOverlay需要在attach window前设置才能生效
-            flContainerSmall.removeViewAt(0);
-            flContainerSmall.addView(mPlayerView, 0);
-            setSurfaceZOrderMediaOverlay(flContainerSmall, true);
         } else {
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
             lpSmallContainer.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
@@ -642,6 +639,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         super.onPause();
         if (mPlayerView != null) {
             mPlayerView.onPause();
+            if(!mPlayerView.isPlaying()){
+                if (isSmallView) {
+                    smallPlaceHolder.setVisibility(View.VISIBLE);
+                } else {
+                    bigPlaceHolder.setVisibility(View.VISIBLE);
+                }
+                nameMask.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -651,8 +656,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (mPlayerView != null) {
             mPlayerView.onResume();
         }
-        setSurfaceZOrderMediaOverlay(flContainerBig, false);
-        setSurfaceZOrderMediaOverlay(flContainerSmall, true);
     }
 
     @Override
@@ -742,6 +745,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 bigPlaceHolder.setVisibility(View.GONE);
             }
             isShowingError = true;
+            pptGestureMask.setGestureEnable(false);
 //            //检测到是移动网络
 //            if(code == -2){
 //                mPlayerView.setEnableNetWatcher(false);//关闭移动网络检测提示
@@ -772,7 +776,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onPlayCompleted(BJPlayerView playerView, VideoItem item, SectionItem nextSection) {
-            Log.d(TAG, "onPlayCompleted");
             if (isSmallView) {
                 nameMask.setVisibility(View.INVISIBLE);
                 smallPlaceHolder.setVisibility(View.VISIBLE);
@@ -787,6 +790,19 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 //            if (launchStepDlg != null) {
 //                launchStepDlg.dismiss();
 //            }
+            if (isSmallView) {
+                smallPlaceHolder.setVisibility(View.GONE);
+                nameMask.setVisibility(View.VISIBLE);
+            } else {
+                bigPlaceHolder.setVisibility(View.GONE);
+            }
+            //setSurfaceZOrderMediaOverlay需要在attach window前设置才能生效
+            View smallView = flContainerSmall.getChildAt(0);
+            if(smallView instanceof BJPlayerView){
+                flContainerSmall.removeViewAt(0);
+                flContainerSmall.addView(smallView, 0);
+                setSurfaceZOrderMediaOverlay(flContainerSmall, true);
+            }
         }
 
         @Override
@@ -796,6 +812,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         @Override
         public void onPlay(BJPlayerView playerView) {
             isShowingError = false;
+            pptGestureMask.setGestureEnable(true);
             if (isVideoOn) {
                 if (isSmallView) {
                     smallPlaceHolder.setVisibility(isVideoOn ? View.GONE : View.VISIBLE);
