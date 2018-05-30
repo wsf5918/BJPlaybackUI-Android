@@ -2,7 +2,6 @@ package com.baijia.playbackui.adapters;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -19,12 +18,10 @@ import android.widget.TextView;
 import com.baijia.playbackui.R;
 import com.baijia.playbackui.chat.PBChatPresenter;
 import com.baijia.playbackui.utils.PBDisplayUtils;
-import com.baijia.player.playback.PBRoom;
 import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.models.imodels.IMessageModel;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
+import com.baijiayun.picasso.Callback;
+import com.baijiayun.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +139,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 //                    return false;
 //                }
 //            }).apply(options).into(imageViewHolder.ivImg);
-            Picasso.with(context).load(messageModel.getUrl())
+            Picasso.get().load(messageModel.getUrl())
                     .resize(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150))
                     .into(imageViewHolder.ivImg, new Callback() {
                         @Override
@@ -151,7 +148,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
 
                         @Override
-                        public void onError() {
+                        public void onError(Exception e) {
                             imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
                         }
                     });
@@ -169,7 +166,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else if (holder instanceof PBEmojiViewHolder) {
             PBEmojiViewHolder emojiViewHolder = (PBEmojiViewHolder) holder;
             emojiViewHolder.tvName.setText(spanText);
-            Picasso.with(context).load(messageModel.getUrl())
+            Picasso.get().load(messageModel.getUrl())
                     .error(R.drawable.pb_ic_exit)
                     .resize(emojiSize, emojiSize)
                     .into(emojiViewHolder.ivEmoji);

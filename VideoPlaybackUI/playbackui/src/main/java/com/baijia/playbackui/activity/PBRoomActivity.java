@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -63,7 +62,7 @@ import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.BJCenterViewPresenter;
-import com.squareup.picasso.Picasso;
+import com.baijiayun.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -107,8 +106,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private boolean isOrientation = true;//用来判断当前是横屏还是竖屏(初始话为竖屏)
     private List<VideoItem.DefinitionItem> definitionItems = new ArrayList<>();
     private DefinitionAdapter definitionAdapter;
-    private int selectPosition = -1;
-
+    private int selectPosition = 0;
     private boolean videoLunchSuccess = false;
     private static final String CHAT_FRAGMENT_TAG = "CHAT_FRAGMENT_TAG";
     private static final String PPT_FRAGMENT_TAG = "PPT_FRAGMENT_TAG";
@@ -169,13 +167,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptGestureMask.setGestureEnable(true);
         pptGestureMask.setBjPlayerView(mPlayerView);
 
-        Picasso.with(this)
+        Picasso.get()
                 .load(ConstantUtil.AUDIO_ON_PICTURE)
                 .fit()
                 .error(R.drawable.ic_video_back_zhanwei)
                 .into(smallPlaceHolder);
 
-        Picasso.with(this)
+
+        Picasso.get()
                 .load(ConstantUtil.AUDIO_ON_PICTURE)
                 .fit()
                 .error(R.color.lp_ppt_white)
@@ -443,6 +442,9 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
+                        if (!mPlayerView.getVideoView().isPlaying()) {
+                            return;
+                        }
                         isVideoOn = aBoolean;
                         if (isSmallView) {
                             if (!aBoolean) {
@@ -639,7 +641,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         super.onPause();
         if (mPlayerView != null) {
             mPlayerView.onPause();
-            if(!mPlayerView.isPlaying()){
+            if (!mPlayerView.isPlaying()) {
                 if (isSmallView) {
                     smallPlaceHolder.setVisibility(View.VISIBLE);
                 } else {
@@ -691,8 +693,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             } else {
                 smallPlaceHolder.setVisibility(View.VISIBLE);
             }
-            bjCenterViewPresenter.setRightMenuHidden(true);
-            bjCenterViewPresenter.onHide();
             mPlayerView.setGestureEnable(false);
             pptGestureMask.setGestureEnable(true);
             bigPlaceHolder.setVisibility(View.GONE);
@@ -703,8 +703,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             } else {
                 bigPlaceHolder.setVisibility(View.VISIBLE);
             }
-            bjCenterViewPresenter.setRightMenuHidden(false);
-            bjCenterViewPresenter.onShow();
             mPlayerView.setGestureEnable(true);
             pptGestureMask.setGestureEnable(false);
             smallPlaceHolder.setVisibility(View.GONE);
@@ -726,13 +724,24 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private OnPlayerListener onPlayerListener = new OnPlayerListener() {
         @Override
         public void onVideoInfoInitialized(BJPlayerView playerView, long duration, HttpException exception) {
-            definitionItems = mPlayerView.getVideoItem().definition;
-            definitionAdapter = new DefinitionAdapter(PBRoomActivity.this, definitionItems);
-            definitionAdapter.setRouterListener(PBRoomActivity.this);
-            definitionContainer.setAdapter(definitionAdapter);
+            if (!isVideoInfoInitialized) {
+                definitionItems = mPlayerView.getVideoItem().definition;
+                definitionAdapter = new DefinitionAdapter(PBRoomActivity.this, definitionItems);
+                definitionAdapter.setRouterListener(PBRoomActivity.this);
+                definitionContainer.setAdapter(definitionAdapter);
+
+                String defaultDefinition = mPlayerView.getVideoItem().playbackDefDefinition;
+                for (VideoItem.DefinitionItem definitionItem : definitionItems) {
+                    if (definitionItem.type.equals(defaultDefinition)) {
+                        definitionAdapter.setSelectPosition(selectPosition);
+                        setDefinition(definitionItem.name);
+                        break;
+                    }
+                    selectPosition++;
+                }
+            }
             //隐藏loading
             mPlayerView.getCenterView().setVisibility(View.GONE);
-
             updateWaterMark();
             isVideoInfoInitialized = true;
         }
@@ -746,13 +755,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
             }
             isShowingError = true;
             pptGestureMask.setGestureEnable(false);
-//            //检测到是移动网络
-//            if(code == -2){
-//                mPlayerView.setEnableNetWatcher(false);//关闭移动网络检测提示
-//            }
-//            if (launchStepDlg != null) {
-//                launchStepDlg.dismiss();
-//            }
         }
 
         @Override
@@ -787,9 +789,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
         @Override
         public void onVideoPrepared(BJPlayerView playerView) {
-//            if (launchStepDlg != null) {
-//                launchStepDlg.dismiss();
-//            }
             if (isSmallView) {
                 smallPlaceHolder.setVisibility(View.GONE);
                 nameMask.setVisibility(View.VISIBLE);
@@ -797,12 +796,20 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
                 bigPlaceHolder.setVisibility(View.GONE);
             }
             //setSurfaceZOrderMediaOverlay需要在attach window前设置才能生效
+            View bigView = flContainerBig.getChildAt(0);
             View smallView = flContainerSmall.getChildAt(0);
-            if(smallView instanceof BJPlayerView){
-                flContainerSmall.removeViewAt(0);
-                flContainerSmall.addView(smallView, 0);
-                setSurfaceZOrderMediaOverlay(flContainerSmall, true);
+            if (bigView == null || smallView == null) {
+                return;
             }
+            pptFragment.onStop();
+            flContainerBig.removeView(bigView);
+            flContainerSmall.removeView(smallView);
+            flContainerBig.addView(bigView, 0);
+            flContainerSmall.addView(smallView, 0);
+            pptFragment.onStart();
+
+            setSurfaceZOrderMediaOverlay(bigView, false);
+            setSurfaceZOrderMediaOverlay(smallView, true);
         }
 
         @Override
@@ -828,7 +835,6 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         if (isVideoInfoInitialized) {
             definitionAdapter.setSelectPosition(selectPosition);
             definitionRl.setVisibility(View.VISIBLE);
-            //definitionView.setVisibility(View.VISIBLE);
             flContainerProgress.setVisibility(View.INVISIBLE);
         }
     }

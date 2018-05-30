@@ -14,13 +14,14 @@ import com.baijia.playbackui.R;
 import com.baijia.playbackui.base.BaseDialogFragment;
 import com.baijia.playbackui.utils.AliCloudImageUtil;
 import com.baijiahulian.livecore.utils.DisplayUtils;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.baijiayun.picasso.Callback;
+import com.baijiayun.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
-import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
-import static com.squareup.picasso.MemoryPolicy.NO_STORE;
+import static com.baijiayun.picasso.MemoryPolicy.NO_CACHE;
+import static com.baijiayun.picasso.MemoryPolicy.NO_STORE;
+
 
 /**
  * Created by Shubo on 2017/3/23.
@@ -54,7 +55,7 @@ public class ChatPictureViewFragment extends BaseDialogFragment implements ChatP
         imageView =  contentView.findViewById(R.id.lp_dialog_big_picture_img);
         tvLoading =  contentView.findViewById(R.id.lp_dialog_big_picture_loading_label);
 //        btnSave = (Button) view.findViewById(R.id.lp_dialog_big_picture_save);
-        Picasso.with(getContext())
+        Picasso.get()
                 .load(AliCloudImageUtil.getScaledUrl(url, AliCloudImageUtil.SCALED_MFIT, DisplayUtils.getScreenWidthPixels(getContext()), DisplayUtils.getScreenHeightPixels(getContext())))
                 .memoryPolicy(NO_CACHE, NO_STORE)
                 .into(imageView, new Callback() {
@@ -64,7 +65,7 @@ public class ChatPictureViewFragment extends BaseDialogFragment implements ChatP
                     }
 
                     @Override
-                    public void onError() {
+                    public void onError(Exception e) {
                         tvLoading.setText(getString(R.string.live_image_loading_fail));
                     }
                 });

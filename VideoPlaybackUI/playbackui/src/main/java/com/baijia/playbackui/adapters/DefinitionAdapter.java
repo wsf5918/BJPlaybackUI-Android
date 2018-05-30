@@ -21,10 +21,9 @@ import java.util.List;
 
 public class DefinitionAdapter extends RecyclerView.Adapter<DefinitionAdapter.DefinitionHolder> {
     private Context context;
-    private List<VideoItem.DefinitionItem> definitionItems = new ArrayList<>();
+    private List<VideoItem.DefinitionItem> definitionItems;
     private PBRouterListener routerListener;
     private int selectPosition = 0;//记录选中的position
-
 
     public DefinitionAdapter(Context context, List<VideoItem.DefinitionItem> definitionItems) {
         this.context = context;
