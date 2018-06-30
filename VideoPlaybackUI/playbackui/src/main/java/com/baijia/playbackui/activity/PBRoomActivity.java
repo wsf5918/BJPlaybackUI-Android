@@ -62,7 +62,7 @@ import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
 import com.baijiahulian.player.playerview.BJCenterViewPresenter;
-import com.baijiayun.picasso.Picasso;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -167,14 +167,14 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         pptGestureMask.setGestureEnable(true);
         pptGestureMask.setBjPlayerView(mPlayerView);
 
-        Picasso.get()
+        Picasso.with(this)
                 .load(ConstantUtil.AUDIO_ON_PICTURE)
                 .fit()
                 .error(R.drawable.ic_video_back_zhanwei)
                 .into(smallPlaceHolder);
 
 
-        Picasso.get()
+        Picasso.with(this)
                 .load(ConstantUtil.AUDIO_ON_PICTURE)
                 .fit()
                 .error(R.color.lp_ppt_white)
@@ -724,7 +724,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private OnPlayerListener onPlayerListener = new OnPlayerListener() {
         @Override
         public void onVideoInfoInitialized(BJPlayerView playerView, long duration, HttpException exception) {
-            if (!isVideoInfoInitialized) {
+            if (!isVideoInfoInitialized && !mRoom.isPlayBackOffline()) {
                 definitionItems = mPlayerView.getVideoItem().definition;
                 definitionAdapter = new DefinitionAdapter(PBRoomActivity.this, definitionItems);
                 definitionAdapter.setRouterListener(PBRoomActivity.this);

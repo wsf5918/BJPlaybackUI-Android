@@ -20,8 +20,8 @@ import com.baijia.playbackui.chat.PBChatPresenter;
 import com.baijia.playbackui.utils.PBDisplayUtils;
 import com.baijiahulian.livecore.context.LPConstants;
 import com.baijiahulian.livecore.models.imodels.IMessageModel;
-import com.baijiayun.picasso.Callback;
-import com.baijiayun.picasso.Picasso;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +139,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 //                    return false;
 //                }
 //            }).apply(options).into(imageViewHolder.ivImg);
-            Picasso.get().load(messageModel.getUrl())
+            Picasso.with(context).load(messageModel.getUrl())
                     .resize(PBDisplayUtils.dip2px(context, 200), PBDisplayUtils.dip2px(context, 150))
                     .into(imageViewHolder.ivImg, new Callback() {
                         @Override
@@ -148,7 +148,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         }
 
                         @Override
-                        public void onError(Exception e) {
+                        public void onError() {
                             imageViewHolder.tvExclamation.setVisibility(View.VISIBLE);
                         }
                     });
@@ -166,7 +166,7 @@ public class PBMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else if (holder instanceof PBEmojiViewHolder) {
             PBEmojiViewHolder emojiViewHolder = (PBEmojiViewHolder) holder;
             emojiViewHolder.tvName.setText(spanText);
-            Picasso.get().load(messageModel.getUrl())
+            Picasso.with(context).load(messageModel.getUrl())
                     .error(R.drawable.pb_ic_exit)
                     .resize(emojiSize, emojiSize)
                     .into(emojiViewHolder.ivEmoji);
