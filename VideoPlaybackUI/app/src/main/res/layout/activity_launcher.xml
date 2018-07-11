@@ -83,5 +83,33 @@
         android:layout_height="wrap_content"
         android:text="进入在线房间" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_video_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="视频文件名" />
+
+        <EditText
+            android:id="@+id/et_signal_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="信令文件名" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_demo_enter_pb_room_offline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="进入离线房间"
+        />
+
 
 </LinearLayout>

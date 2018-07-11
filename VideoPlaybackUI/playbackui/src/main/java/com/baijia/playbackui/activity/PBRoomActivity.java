@@ -58,6 +58,7 @@ import com.baijiahulian.livecore.context.LiveRoom;
 import com.baijiahulian.livecore.launch.LPLaunchListener;
 import com.baijiahulian.livecore.ppt.LPPPTFragment;
 import com.baijiahulian.livecore.utils.LPErrorPrintSubscriber;
+import com.baijiahulian.livecore.utils.LPRxUtils;
 import com.baijiahulian.player.BJPlayerView;
 import com.baijiahulian.player.bean.SectionItem;
 import com.baijiahulian.player.bean.VideoItem;
@@ -71,6 +72,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static android.R.attr.path;
@@ -119,6 +121,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     private PPTGestureMaskLayout pptGestureMask;
 
     private boolean isShowingError;
+    private Subscription videoStatusSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -437,7 +440,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         }
         mRoom.bindPlayerView(mPlayerView);
         mRoom.setOnPlayerListener(onPlayerListener);
-        mRoom.getObservableOfVideoStatus()
+        videoStatusSubscription = mRoom.getObservableOfVideoStatus()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new LPErrorPrintSubscriber<Boolean>() {
                     @Override
@@ -663,6 +666,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LPRxUtils.unSubscribe(videoStatusSubscription);
         if (mRoom != null) {
             mRoom.quitRoom();
         }

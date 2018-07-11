@@ -58,7 +58,6 @@ public class PBRoomProgressPresenter implements IPlayerTopContact.TopView, IPlay
                 if (mPlayerView != null) {
                     if (mPlayerView.isPlaying()) {
                         mPlayerView.pauseVideo();
-                        IJKMediaPlayer.isPlayBackground = true;
                     } else {
                         mPlayerView.playVideo();
                     }

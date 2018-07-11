@@ -1,8 +1,10 @@
 package com.baijia.videoplaybackui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baijia.playbackui.PBRoomUI;
+import com.baijiahulian.common.permission.AppPermissions;
 import com.baijiahulian.livecore.context.LPConstants;
+
+import java.io.File;
+
+import rx.functions.Action1;
 
 
 public class LauncherActivity extends AppCompatActivity {
@@ -23,6 +30,7 @@ public class LauncherActivity extends AppCompatActivity {
     private EditText etRoomId, etRoomToken, etSessionId;
     private RadioGroup rgEnv;
     private TextView tvCurEnv;
+    private EditText etVideoFile, etSignalFile;
     private LPConstants.LPDeployType deployType = LPConstants.LPDeployType.Product;
 
     @Override
@@ -40,6 +48,8 @@ public class LauncherActivity extends AppCompatActivity {
         rgEnv = (RadioGroup) findViewById(R.id.rg_demo_env);
         tvCurEnv = (TextView) findViewById(R.id.tv_demo_cur_env);
         etSessionId = (EditText) findViewById(R.id.et_demo_session);
+        etVideoFile = findViewById(R.id.et_video_file);
+        etSignalFile = findViewById(R.id.et_signal_file);
         getPrevParams();
     }
 
@@ -82,6 +92,33 @@ public class LauncherActivity extends AppCompatActivity {
                     default:
                         break;
                 }
+            }
+        });
+
+        findViewById(R.id.btn_demo_enter_pb_room_offline).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AppPermissions.newPermissions(LauncherActivity.this)
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(new Action1<Boolean>() {
+                            @Override
+                            public void call(Boolean aBoolean) {
+                                if (aBoolean) {
+                                    String fileStr = etVideoFile.getText().toString().trim();
+                                    String signalStr = etSignalFile.getText().toString().trim();
+                                    String videoFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bb_video_downloaded/" + fileStr;
+                                    String signalFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bb_video_downloaded/" + signalStr;
+                                    if (!new File(videoFilePath).exists() || !new File(signalFilePath).exists()) {
+                                        Toast.makeText(LauncherActivity.this, "视频或信令文件不存在！请检查", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    PBRoomUI.enterLocalPBRoom(LauncherActivity.this, "123456", videoFilePath, signalFilePath, deployType, null);
+                                } else {
+                                    Toast.makeText(LauncherActivity.this, "无法操作", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
             }
         });
     }
