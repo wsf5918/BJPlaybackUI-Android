@@ -35,8 +35,8 @@ dependencies {
 //    api project(path: ':video-playback') //回放core
 //    api project(path: ":liveplayer-sdk-core-ppt")  //ppt
     //打包
-    api 'com.baijia.player:video-playback:1.3.12'
-    api ('com.baijia.live:liveplayer-sdk-core-ppt:1.3.12-snapshot')
+    api 'com.baijia.player:video-playback:1.3.13'
+    api ('com.baijia.live:liveplayer-sdk-core-ppt:1.3.13-snapshot')
 
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'

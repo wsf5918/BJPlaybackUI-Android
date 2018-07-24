@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -542,6 +543,18 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
         flContainerSmall.configurationChanged();
         isOrientation = newConfig.orientation == ORIENTATION_PORTRAIT;
         progressPresenter.onOrientationChanged(isOrientation);
+        if (isOrientation) {
+            rateView.setOrientation(LinearLayout.VERTICAL);
+            LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            definitionContainer.setLayoutManager(manager);
+            definitionContainer.setAdapter(definitionAdapter);
+        } else {
+            rateView.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            definitionContainer.setLayoutManager(manager);
+            definitionContainer.setAdapter(definitionAdapter);
+        }
+
         if (videoLunchSuccess) {
             if (chatFragment == null) {
                 chatFragment = (PBChatFragment) getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
@@ -851,19 +864,7 @@ public class PBRoomActivity extends PBBaseActivity implements LPLaunchListener, 
 
     @Override
     public boolean changeOrientation() {
-        if (isOrientation) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            rateView.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-            definitionContainer.setLayoutManager(manager);
-            definitionContainer.setAdapter(definitionAdapter);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            rateView.setOrientation(LinearLayout.VERTICAL);
-            LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-            definitionContainer.setLayoutManager(manager);
-            definitionContainer.setAdapter(definitionAdapter);
-        }
+        setRequestedOrientation(isOrientation ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         return isOrientation;
     }
 
